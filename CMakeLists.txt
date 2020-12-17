@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.10)
+project(tt VERSION 0.1)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+add_executable(tt main.c)
+target_link_libraries(tt -lncurses -g)
