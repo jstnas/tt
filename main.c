@@ -2,8 +2,8 @@
 #include <ncurses.h>
 #include "node.h"
 
-struct node* t_sen = NULL;
-struct node* i_sen = NULL;
+struct node *t_sen = NULL;
+struct node *i_sen = NULL;
 char allowed_keys[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 bool allowed = false;
 
@@ -16,6 +16,18 @@ bool is_key_allowed(const int key)
 			return true;
 	}
 	return false;
+}
+
+void add_target_word(char word[])
+{
+	// Create a new word node.
+	struct node* new_word = NULL;
+	int length = strlen(word);
+	for (int c = 0; c < length; c++)
+	{
+		node_push(&new_word, &word[c]);
+	}
+	node_push(&t_sen, new_word);
 }
 
 void add_char(char* character)
@@ -40,10 +52,15 @@ void remove_char()
 		return;
 	// Get the last word.
 	struct node* last_word = node_tail(i_sen);
-	node_pop((struct node**)&last_word->data);
+	// Remove the whole word if the word is empty.
 	if (last_word->data == NULL)
 	{
 		node_pop(&i_sen);
+	}
+	// Remove the last character otherwise.
+	else
+	{
+		node_pop((struct node**)&last_word->data);
 	}
 }
 
@@ -71,36 +88,58 @@ int init()
 	init_pair(0, COLOR_WHITE, COLOR_BLACK); // Normal.
 	init_pair(1, COLOR_GREEN, COLOR_BLACK); // Correct.
 	init_pair(2, COLOR_RED, COLOR_BLACK); // Incorrect.
+	add_target_word("Hello");
+	add_target_word("World");
 	return 0;
 }
 
-void draw_words()
+void draw_words_new()
 {
-	struct node* c_word = i_sen;
-	if (c_word == NULL)
-		return;
-	// Go through each word.
-	do
+	struct node *i_word = i_sen, *t_word = t_sen;
+	while (i_word != NULL || t_word != NULL)
 	{
-		struct node* c_char = c_word->data;
-		if (c_char == NULL)
-			return;
-		// Go through each character.
-		do
+		struct node *i_char = i_word == NULL ? NULL : i_word->data;
+		struct node *t_char  = t_word == NULL ? NULL : t_word->data;
+		while (i_char != NULL || t_char != NULL)
 		{
-			addch(*(char*)c_char->data);
-			c_char = c_char->next;
+			// Normal.
+			if (i_char == NULL)
+				addch(*(char*)t_char->data | COLOR_PAIR(0));
+			// Wrong.
+			else if (t_char == NULL)
+				addch(*(char*)i_char->data | COLOR_PAIR(2));
+			else
+			{
+				if (*(char*)i_char->data == *(char*)t_char->data)
+				{
+					addch(*(char*)i_char->data | COLOR_PAIR(1));
+				}
+				else
+				{
+					addch(*(char*)t_char->data | COLOR_PAIR(2));
+				}
+			}
+			i_char = i_char == NULL ? NULL : i_char->next;
+			t_char = t_char == NULL ? NULL : t_char->next;
 		}
-		while (c_char != NULL);
-		// Add a space between words.
-		if (c_word->next != NULL)
+		// Add space.
+		bool add_space = false;
+		if (i_word != NULL)
 		{
+			if (i_word->next != NULL)
+				add_space = true;
+		}
+		if (t_word != NULL)
+		{
+			if (t_word->next != NULL)
+				add_space = true;
+		}
+		if (add_space)
 			addch(' ');
-		}
-		c_word = c_word->next;
+		i_word = i_word == NULL ? NULL : i_word->next;
+		t_word = t_word == NULL ? NULL : t_word->next;
 	}
-	while (c_word != NULL);
-};
+}
 
 int input()
 {
@@ -131,7 +170,7 @@ int draw()
 	// Clear screen.
 	erase();
 	// Draw each character.
-	draw_words();
+	draw_words_new();
 	// Update screen.
 	refresh();
 	return 0;
@@ -140,7 +179,7 @@ int draw()
 int main()
 {
 	init();
-	struct node *word = NULL;
+	draw();
 	// Update.
 	while (TRUE)
 	{
