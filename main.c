@@ -1,11 +1,19 @@
+#include <stdlib.h>
 #include <string.h>
 #include <ncurses.h>
+#include "config.h"
 #include "node.h"
+#include "words.h"
 
+static unsigned word_count = (sizeof words / sizeof words[0]);
+static char allowed_keys[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+static unsigned seed = 0;
+static int rng_word_count = 50;
 struct node *t_sen = NULL;
 struct node *i_sen = NULL;
-char allowed_keys[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 bool allowed = false;
+int x = 0;
+int y = 0;
 
 bool is_key_allowed(const int key)
 {
@@ -18,7 +26,7 @@ bool is_key_allowed(const int key)
 	return false;
 }
 
-void add_target_word(char word[])
+void add_target_word(char *word)
 {
 	// Create a new word node.
 	struct node* new_word = NULL;
@@ -28,6 +36,13 @@ void add_target_word(char word[])
 		node_push(&new_word, &word[c]);
 	}
 	node_push(&t_sen, new_word);
+}
+
+void add_random_word()
+{
+	// Get the word index.
+	const int word_index = rand() % word_count;
+	add_target_word(words[word_index]);
 }
 
 void add_char(char* character)
@@ -76,7 +91,15 @@ void add_word()
 
 int init()
 {
+	// Initialise rng.
+	if (seed == 0)
+	{
+		srand(time(NULL));
+	}
+	else
+		srand(seed);
 	initscr();
+	use_default_colors();
 	noecho();
 	keypad(stdscr, TRUE);
 	if (!has_colors())
@@ -85,11 +108,11 @@ int init()
 		return 1;
 	}
 	start_color();
-	init_pair(0, COLOR_WHITE, COLOR_BLACK); // Normal.
-	init_pair(1, COLOR_GREEN, COLOR_BLACK); // Correct.
-	init_pair(2, COLOR_RED, COLOR_BLACK); // Incorrect.
-	add_target_word("Hello");
-	add_target_word("World");
+	init_pair(1, foreground_color, background_color); // Normal.
+	init_pair(2, correct_color, background_color); // Correct.
+	init_pair(3, incorrect_color, background_color); // Incorrect.
+	for (int i = 0; i < rng_word_count; i++)
+		add_random_word();
 	return 0;
 }
 
@@ -104,19 +127,19 @@ void draw_words_new()
 		{
 			// Normal.
 			if (i_char == NULL)
-				addch(*(char*)t_char->data | COLOR_PAIR(0));
+				addch(*(char*)t_char->data | COLOR_PAIR(1));
 			// Wrong.
 			else if (t_char == NULL)
-				addch(*(char*)i_char->data | COLOR_PAIR(2));
+				addch(*(char*)i_char->data | COLOR_PAIR(3));
 			else
 			{
 				if (*(char*)i_char->data == *(char*)t_char->data)
 				{
-					addch(*(char*)i_char->data | COLOR_PAIR(1));
+					addch(*(char*)i_char->data | COLOR_PAIR(2));
 				}
 				else
 				{
-					addch(*(char*)t_char->data | COLOR_PAIR(2));
+					addch(*(char*)t_char->data | COLOR_PAIR(3));
 				}
 			}
 			i_char = i_char == NULL ? NULL : i_char->next;
@@ -124,16 +147,16 @@ void draw_words_new()
 		}
 		// Add space.
 		bool add_space = false;
-		if (i_word != NULL)
+
+		if (i_word != NULL && i_word->next != NULL)
 		{
-			if (i_word->next != NULL)
-				add_space = true;
+			add_space = true;
 		}
-		if (t_word != NULL)
+		else if (t_word != NULL && t_word->next != NULL)
 		{
-			if (t_word->next != NULL)
-				add_space = true;
+			add_space = true;
 		}
+
 		if (add_space)
 			addch(' ');
 		i_word = i_word == NULL ? NULL : i_word->next;
@@ -171,6 +194,7 @@ int draw()
 	erase();
 	// Draw each character.
 	draw_words_new();
+	move(5, 0);
 	// Update screen.
 	refresh();
 	return 0;
