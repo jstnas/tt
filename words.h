@@ -1,3 +1,6 @@
+#ifndef WORDS_H
+#define WORDS_H
+
 static char *words[] = {
 	"the",
 	"be",
@@ -200,3 +203,7 @@ static char *words[] = {
 	"help",
 	"line"
 };
+
+static size_t word_count = sizeof(words) / sizeof(char *);
+
+#endif

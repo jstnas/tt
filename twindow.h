@@ -4,12 +4,10 @@
 #include <ncurses.h>
 #include "vector2.h"
 #include "node.h"
-#include "words.h"
+#include "typing.h"
 
 #define TWINDOW_WIDTH 80
 #define TWINDOW_HEIGHT 4
-
-static size_t word_count = sizeof(words) / sizeof(words[0]);
 
 typedef struct TWindow TWindow;
 struct TWindow {
@@ -21,6 +19,7 @@ struct TWindow {
 	Vector2 cursor;
 
 	Node *t_sen;
+	Node *i_sen;
 };
 
 TWindow *twindow_init(Vector2 *screen_size);
@@ -45,20 +44,8 @@ TWindow *twindow_init(Vector2 *screen_size) {
 	// Create the target sentence.
 	srand(time(NULL));
 	win->t_sen = NULL;
-	size_t char_count = 0;
-	// Continue until enough characters are generated.
-	while (char_count < TWINDOW_WIDTH * (TWINDOW_HEIGHT - 1)) {
-		const int word_index = rand() % word_count;
-		const size_t word_length = strlen(words[word_index]);
-		char_count += word_length + 1;
-		Node* new_word = NULL;
-		for (size_t c = 0; c < word_length; c++)
-		{
-			node_push(&new_word, &words[word_index][c]);
-		}
-		node_push(&win->t_sen, new_word);
-	}
-
+	const size_t target_length = TWINDOW_WIDTH * (TWINDOW_HEIGHT - 1);
+	win->t_sen = init_target_sentence(target_length);
 
 	return win;
 }
