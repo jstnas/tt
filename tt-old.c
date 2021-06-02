@@ -9,8 +9,8 @@ static unsigned word_count = (sizeof words / sizeof words[0]);
 static char allowed_keys[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 static unsigned seed = 0;
 static int rng_word_count = 50;
-struct node *t_sen = NULL;
-struct node *i_sen = NULL;
+Node *t_sen = NULL;
+Node *i_sen = NULL;
 bool allowed = false;
 int x = 0;
 int y = 0;
@@ -29,7 +29,7 @@ bool is_key_allowed(const int key)
 void add_target_word(char *word)
 {
 	// Create a new word node.
-	struct node* new_word = NULL;
+	Node* new_word = NULL;
 	int length = strlen(word);
 	for (int c = 0; c < length; c++)
 	{
@@ -50,14 +50,14 @@ void add_char(char* character)
 	// Create a new word.
 	if (i_sen == NULL)
 	{
-		struct node* new_word = NULL;
+		Node* new_word = NULL;
 		node_push(&new_word, character);
 		node_push(&i_sen, new_word);
 		return;
 	}
 	// Add the character to the last word.
-	struct node* last_word = node_tail(i_sen);
-	node_push((struct node**)&last_word->data, character);
+	Node* last_word = node_tail(i_sen);
+	node_push((Node**)&last_word->data, character);
 }
 
 void remove_char()
@@ -66,7 +66,7 @@ void remove_char()
 	if (i_sen == NULL)
 		return;
 	// Get the last word.
-	struct node* last_word = node_tail(i_sen);
+	Node* last_word = node_tail(i_sen);
 	// Remove the whole word if the word is empty.
 	if (last_word->data == NULL)
 	{
@@ -75,7 +75,7 @@ void remove_char()
 	// Remove the last character otherwise.
 	else
 	{
-		node_pop((struct node**)&last_word->data);
+		node_pop((Node**)&last_word->data);
 	}
 }
 
@@ -118,11 +118,11 @@ int init()
 
 void draw_words_new()
 {
-	struct node *i_word = i_sen, *t_word = t_sen;
+	Node *i_word = i_sen, *t_word = t_sen;
 	while (i_word != NULL || t_word != NULL)
 	{
-		struct node *i_char = i_word == NULL ? NULL : i_word->data;
-		struct node *t_char  = t_word == NULL ? NULL : t_word->data;
+		Node *i_char = i_word == NULL ? NULL : i_word->data;
+		Node *t_char  = t_word == NULL ? NULL : t_word->data;
 		while (i_char != NULL || t_char != NULL)
 		{
 			// Normal.

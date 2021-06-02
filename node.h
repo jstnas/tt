@@ -3,26 +3,27 @@
 
 #include <stdlib.h>
 
-struct node;
-struct node *node_tail(struct node *head);
-void node_push(struct node **head, void *data);
-void node_pop(struct node **head);
-int node_length(struct node *head);
-
-struct node
+typedef struct Node Node;
+struct Node
 {
-	struct node *next;
+	Node *next;
 	void *data;
 };
 
-struct node *node_tail(struct node *head)
+Node *node_tail(Node *head);
+void node_push(Node **head, void *data);
+void node_pop(Node **head);
+int node_length(Node *head);
+
+
+Node *node_tail(Node *head)
 {
 	if (head == NULL)
 	{
 		return NULL;
 	}
 	// Get the last node in the list.
-	struct node *current = head;
+	Node *current = head;
 	while (current->next != NULL)
 	{
 		current = current->next;
@@ -30,9 +31,9 @@ struct node *node_tail(struct node *head)
 	return current;
 }
 
-void node_push(struct node **head, void *data)
+void node_push(Node **head, void *data)
 {
-	struct node *new_node = (struct node*)malloc(sizeof(struct node));
+	Node *new_node = (Node*)malloc(sizeof(Node));
 	if (new_node == NULL)
 	{
 		return;
@@ -47,12 +48,12 @@ void node_push(struct node **head, void *data)
 	// Add the new node to the end of the list.
 	else
 	{
-		struct node *last = node_tail(*head);
+		Node *last = node_tail(*head);
 		last->next = new_node;
 	}
 }
 
-void node_pop(struct node **head)
+void node_pop(Node **head)
 {
 	// Return if list is empty.
 	if (*head == NULL)
@@ -67,8 +68,8 @@ void node_pop(struct node **head)
 	}
 	else
 	{
-		struct node **current = head;
-		struct node **previous = NULL;
+		Node **current = head;
+		Node **previous = NULL;
 		while ((*current)->next != NULL)
 		{
 			previous = current;
@@ -80,7 +81,7 @@ void node_pop(struct node **head)
 	}
 }
 
-int node_length(struct node *head)
+int node_length(Node *head)
 {
 	if (head == NULL)
 	{
@@ -88,7 +89,7 @@ int node_length(struct node *head)
 	}
 	else
 	{
-		struct node *current = head;
+		Node *current = head;
 		int count = 1;
 		while (current != NULL)
 		{

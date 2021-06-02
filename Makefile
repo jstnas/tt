@@ -1,5 +1,5 @@
-tt: clean
-	gcc -o tt main.c -lncurses
+tt: tt.c config.h node.h words.h
+	gcc -o tt tt.c -lncurses
 
-clean:
-	rm tt
+tt-old: tt-old.c config.h node.h words.h
+	gcc -o tt-old tt-old.c -lncurses
