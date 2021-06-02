@@ -43,9 +43,9 @@ TWindow *twindow_init(Vector2 *screen_size) {
 
 	// Create the target sentence.
 	srand(time(NULL));
-	win->t_sen = NULL;
 	const size_t target_length = TWINDOW_WIDTH * (TWINDOW_HEIGHT - 1);
 	win->t_sen = init_target_sentence(target_length);
+	win->i_sen = NULL;
 
 	return win;
 }
@@ -55,7 +55,14 @@ void twindow_destroy(TWindow *win) {
 }
 
 int twindow_update(TWindow *win) {
-	int c = wgetch(win->window);
+	int input = wgetch(win->window);
+	if (input == KEY_BACKSPACE)
+		remove_input_key(&win->i_sen);
+	else if (input == ' ') {
+		add_input_word(&win->i_sen);
+	}
+	else if (is_key_allowed((char)input))
+		add_input_key(&win->i_sen, input);
 	return -1;
 }
 
@@ -80,6 +87,7 @@ void twindow_draw(TWindow *win) {
 	mvwprintw(win->window, 0, 0, "30");
 
 	// Draw the sentence.
+	/*
 	size_t line_length = 0;
 	size_t row = 1;
 	wmove(win->window, row, 0);
@@ -108,6 +116,35 @@ void twindow_draw(TWindow *win) {
 			}
 		}
 		t_word = t_word == NULL ? NULL : t_word->next;
+	}
+	*/
+	size_t row = 1;
+	size_t line_length = 0;
+	wmove(win->window, row, 0);
+	Node *i_word = win->i_sen;
+	while (i_word != NULL) {
+		Node *i_char = i_word == NULL ? NULL : i_word->data;
+		while(i_char != NULL) {
+			waddch(win->window, *(char *)i_char->data);
+			line_length++;
+			i_char = i_char == NULL ? NULL : i_char->next;
+		}
+		if (i_word != NULL && i_word->next != NULL)
+		{
+			if (node_length(i_word->next->data) + line_length <= size.x) {
+				waddch(win->window, ' ');
+				line_length++;
+			}
+			else {
+				row++;
+				wmove(win->window, row, 0);
+				line_length = 0;
+				// Stop drawing if hit last column.
+				if (row == TWINDOW_HEIGHT)
+					break;
+			}
+		}
+		i_word = i_word == NULL ? NULL : i_word->next;
 	}
 
 	wmove(win->window, win->cursor.y, win->cursor.x);
