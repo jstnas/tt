@@ -25,7 +25,6 @@ void t_destroy(void *twindow);
 int main() {
 	// Init.
 	initscr();
-	refresh();
 	noecho();
 	cbreak();
 
@@ -38,16 +37,19 @@ int main() {
 	Menu *menu = menu_init("Menu", menu_options, padding, screen_size);
 	windows[0] = window_init(menu, m_update, m_draw, m_destroy);
 
-	TWindow *twindow = twindow_init(vector2_init(1, 1), screen_size);
+	TWindow *twindow = twindow_init(vector2_init(2, 2), screen_size);
 	windows[1] = window_init(twindow, t_update, t_draw, t_destroy);
 
 	// Main loop.
+	mvprintw(0, 0, "tt");
+	refresh();
 	twin_draw();
 	while (running)
 	{
 		twin_update();
 		*screen_size = get_window_size(stdscr);
 		clear();
+		mvprintw(0, 0, "tt");
 		refresh();
 		twin_draw();
 	}

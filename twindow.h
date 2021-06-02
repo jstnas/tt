@@ -42,14 +42,14 @@ TWindow *twindow_init(Vector2 padding, Vector2 *screen_size) {
 	win->window = newwin(0, 0, 0, 0);
 	keypad(win->window, TRUE);
 
-	win->cursor = vector2_init(win->padding.y, win->padding.x);
+	win->cursor = vector2_init(win->padding.x, win->padding.y + 1);
 
 	// Create the target sentence.
 	srand(time(NULL));
 	win->t_sen = NULL;
 	size_t char_count = 0;
 	// Continue until enough characters are generated.
-	while (char_count < TWINDOW_WIDTH * TWINDOW_HEIGHT) {
+	while (char_count < TWINDOW_WIDTH * (TWINDOW_HEIGHT - 1)) {
 		const int word_index = rand() % word_count;
 		const size_t word_length = strlen(words[word_index]);
 		char_count += word_length + 1;
@@ -91,17 +91,37 @@ void twindow_draw(TWindow *win) {
 	wclear(win->window);
 	box(win->window, 0, 0);
 
+	// Draw the stats.
+	mvwprintw(win->window, win->padding.y, win->padding.x, "WPM:999");
+
 	// Draw the sentence.
-	wmove(win->window, win->padding.y, win->padding.x);
+	size_t line_length = 0;
+	size_t row = 1;
+	wmove(win->window, win->padding.y + row, win->padding.x);
 	Node *t_word = win->t_sen;
 	while (t_word != NULL) {
 		Node *t_char = t_word == NULL ? NULL : t_word->data;
 		while (t_char != NULL) {
 			waddch(win->window, *(char*)t_char->data);
+			line_length++;
 			t_char = t_char == NULL ? NULL : t_char->next;
 		}
+		// Add a space or wrap the word.
 		if (t_word != NULL && t_word->next != NULL)
-			waddch(win->window, ' ');
+		{
+			if (node_length(t_word->next->data) + line_length < size.x - (win->padding.x * 2)) {
+				waddch(win->window, ' ');
+				line_length++;
+			}
+			else {
+				row++;
+				wmove(win->window, win->padding.y + row, win->padding.x);
+				line_length = 0;
+				// Stop drawing if hit last column.
+				if (row == TWINDOW_HEIGHT)
+					break;
+			}
+		}
 		t_word = t_word == NULL ? NULL : t_word->next;
 	}
 
