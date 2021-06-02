@@ -15,7 +15,6 @@ typedef struct TWindow TWindow;
 struct TWindow {
 	WINDOW *window;
 	Vector2 *screen_size;
-	Vector2 padding;
 	Vector2 size;
 	Vector2 position;
 
@@ -24,7 +23,7 @@ struct TWindow {
 	Node *t_sen;
 };
 
-TWindow *twindow_init(Vector2 padding, Vector2 *screen_size);
+TWindow *twindow_init(Vector2 *screen_size);
 void twindow_destroy(TWindow *win);
 int twindow_update(TWindow *win);
 void twindow_draw(TWindow *win);
@@ -33,16 +32,15 @@ unsigned min(unsigned a, unsigned b) {
 	return a < b ? a : b;
 }
 
-TWindow *twindow_init(Vector2 padding, Vector2 *screen_size) {
+TWindow *twindow_init(Vector2 *screen_size) {
 	TWindow *win = (TWindow *)malloc(sizeof(TWindow));
 
-	win->padding = padding;
 	win->screen_size = screen_size;
 
 	win->window = newwin(0, 0, 0, 0);
 	keypad(win->window, TRUE);
 
-	win->cursor = vector2_init(win->padding.x, win->padding.y + 1);
+	win->cursor = vector2_init(0, 1);
 
 	// Create the target sentence.
 	srand(time(NULL));
@@ -76,8 +74,8 @@ int twindow_update(TWindow *win) {
 
 void twindow_draw(TWindow *win) {
 	Vector2 size = {
-		.x = min(TWINDOW_WIDTH + win->padding.x * 2, win->screen_size->x),
-		.y = min(TWINDOW_HEIGHT + win->padding.y * 2, win->screen_size->y)
+		.x = min(TWINDOW_WIDTH, win->screen_size->x),
+		.y = min(TWINDOW_HEIGHT, win->screen_size->y)
 	};
 	wresize(win->window, size.y, size.x);
 
@@ -89,15 +87,15 @@ void twindow_draw(TWindow *win) {
 	mvwin(win->window, position.y, position.x);
 
 	wclear(win->window);
-	box(win->window, 0, 0);
+//	box(win->window, 0, 0);
 
 	// Draw the stats.
-	mvwprintw(win->window, win->padding.y, win->padding.x, "WPM:999");
+	mvwprintw(win->window, 0, 0, "30");
 
 	// Draw the sentence.
 	size_t line_length = 0;
 	size_t row = 1;
-	wmove(win->window, win->padding.y + row, win->padding.x);
+	wmove(win->window, row, 0);
 	Node *t_word = win->t_sen;
 	while (t_word != NULL) {
 		Node *t_char = t_word == NULL ? NULL : t_word->data;
@@ -109,13 +107,13 @@ void twindow_draw(TWindow *win) {
 		// Add a space or wrap the word.
 		if (t_word != NULL && t_word->next != NULL)
 		{
-			if (node_length(t_word->next->data) + line_length < size.x - (win->padding.x * 2)) {
+			if (node_length(t_word->next->data) + line_length <= size.x) {
 				waddch(win->window, ' ');
 				line_length++;
 			}
 			else {
 				row++;
-				wmove(win->window, win->padding.y + row, win->padding.x);
+				wmove(win->window, row, 0);
 				line_length = 0;
 				// Stop drawing if hit last column.
 				if (row == TWINDOW_HEIGHT)

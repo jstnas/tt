@@ -37,7 +37,7 @@ int main() {
 	Menu *menu = menu_init("Menu", menu_options, padding, screen_size);
 	windows[0] = window_init(menu, m_update, m_draw, m_destroy);
 
-	TWindow *twindow = twindow_init(vector2_init(2, 2), screen_size);
+	TWindow *twindow = twindow_init(screen_size);
 	windows[1] = window_init(twindow, t_update, t_draw, t_destroy);
 
 	// Main loop.
