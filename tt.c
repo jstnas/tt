@@ -1,3 +1,4 @@
+#include <time.h>
 #include "menu.h"
 #include "twindow.h"
 #include "window.h"

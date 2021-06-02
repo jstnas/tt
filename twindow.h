@@ -45,6 +45,7 @@ TWindow *twindow_init(Vector2 padding, Vector2 *screen_size) {
 	win->cursor = vector2_init(win->padding.y, win->padding.x);
 
 	// Create the target sentence.
+	srand(time(NULL));
 	win->t_sen = NULL;
 	size_t char_count = 0;
 	// Continue until enough characters are generated.
@@ -91,7 +92,18 @@ void twindow_draw(TWindow *win) {
 	box(win->window, 0, 0);
 
 	// Draw the sentence.
-	
+	wmove(win->window, win->padding.y, win->padding.x);
+	Node *t_word = win->t_sen;
+	while (t_word != NULL) {
+		Node *t_char = t_word == NULL ? NULL : t_word->data;
+		while (t_char != NULL) {
+			waddch(win->window, *(char*)t_char->data);
+			t_char = t_char == NULL ? NULL : t_char->next;
+		}
+		if (t_word != NULL && t_word->next != NULL)
+			waddch(win->window, ' ');
+		t_word = t_word == NULL ? NULL : t_word->next;
+	}
 
 	wmove(win->window, win->cursor.y, win->cursor.x);
 
