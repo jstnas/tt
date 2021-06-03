@@ -1,4 +1,4 @@
-tt: tt.c config.h node.h words.h window.h twindow.h typing.h
+tt: tt.c config.h node.h words.h window.h twindow.h tbackend.h
 	gcc -o tt tt.c -lncurses
 
 old: tt-old.c config.h node.h words.h

@@ -3,8 +3,7 @@
 
 #include <ncurses.h>
 #include "vector2.h"
-#include "node.h"
-#include "typing.h"
+#include "tbackend.h"
 
 #define TWINDOW_WIDTH 80
 #define TWINDOW_HEIGHT 4
@@ -87,7 +86,7 @@ void twindow_draw(TWindow *win) {
 	mvwprintw(win->window, 0, 0, "30");
 
 	// Draw the sentence.
-	/*
+
 	size_t line_length = 0;
 	size_t row = 1;
 	wmove(win->window, row, 0);
@@ -117,7 +116,8 @@ void twindow_draw(TWindow *win) {
 		}
 		t_word = t_word == NULL ? NULL : t_word->next;
 	}
-	*/
+
+	/*
 	size_t row = 1;
 	size_t line_length = 0;
 	wmove(win->window, row, 0);
@@ -146,6 +146,7 @@ void twindow_draw(TWindow *win) {
 		}
 		i_word = i_word == NULL ? NULL : i_word->next;
 	}
+	*/
 
 	wmove(win->window, win->cursor.y, win->cursor.x);
 
