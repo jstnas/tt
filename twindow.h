@@ -25,10 +25,7 @@ TWindow *twindow_init(Vector2 *screen_size);
 void twindow_destroy(TWindow *win);
 int twindow_update(TWindow *win);
 void twindow_draw(TWindow *win);
-
-unsigned min(unsigned a, unsigned b) {
-	return a < b ? a : b;
-}
+unsigned min(unsigned a, unsigned b);
 
 TWindow *twindow_init(Vector2 *screen_size) {
 	TWindow *win = (TWindow *)malloc(sizeof(TWindow));
@@ -87,6 +84,7 @@ void twindow_draw(TWindow *win) {
 
 	// Draw the sentence.
 
+	/*
 	size_t line_length = 0;
 	size_t row = 1;
 	wmove(win->window, row, 0);
@@ -116,8 +114,9 @@ void twindow_draw(TWindow *win) {
 		}
 		t_word = t_word == NULL ? NULL : t_word->next;
 	}
+	*/
 
-	/*
+	
 	size_t row = 1;
 	size_t line_length = 0;
 	wmove(win->window, row, 0);
@@ -146,11 +145,15 @@ void twindow_draw(TWindow *win) {
 		}
 		i_word = i_word == NULL ? NULL : i_word->next;
 	}
-	*/
+	
 
 	wmove(win->window, win->cursor.y, win->cursor.x);
 
 	wrefresh(win->window);
+}
+
+unsigned min(unsigned a, unsigned b) {
+	return a < b ? a : b;
 }
 
 #endif

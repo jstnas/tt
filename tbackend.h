@@ -66,8 +66,9 @@ void remove_input_key(Node **input_sentence) {
 	if (last_word->data == NULL)
 		node_pop(input_sentence);
 	// Remove the last character otherwise.
-	else
+	else {
 		node_pop((Node **)&last_word->data);
+	}
 
 }
 

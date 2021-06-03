@@ -13,7 +13,8 @@ struct Node
 Node *node_tail(Node *head);
 void node_push(Node **head, void *data);
 void node_pop(Node **head);
-int node_length(Node *head);
+void node_pop_front(Node **head);
+size_t node_length(Node *head);
 
 
 Node *node_tail(Node *head) {
@@ -33,50 +34,64 @@ void node_push(Node **head, void *data) {
 	new_node->data = data;
 	new_node->next = NULL;
 	// Set the new node to the head if list is empty.
-	if (*head == NULL)
+	if (*head == NULL) {
 		*head = new_node;
-	// Add the new node to the end of the list.
-	else {
-		Node *last = node_tail(*head);
-		last->next = new_node;
+		return;
 	}
+	// Add the new node to the end of the list.
+	Node *last = node_tail(*head);
+	last->next = new_node;
 }
 
 void node_pop(Node **head) {
 	// Done if node is empty.
 	if (*head == NULL)
 		return;
-	else if ((*head)->next == NULL) {
+
+	if ((*head)->next == NULL) {
 		free(*head);
 		*head = NULL;
 		return;
 	}
-	else
-	{
-		Node **current = head;
-		Node **previous = NULL;
-		while ((*current)->next != NULL) {
-			previous = current;
-			current = &(*current)->next;
-		}
-		(*previous)->next = NULL;
-		free(*current);
-		return;
+
+	Node **current = head;
+	Node **previous = NULL;
+	while ((*current)->next != NULL) {
+		previous = current;
+		current = &(*current)->next;
 	}
+	(*previous)->next = NULL;
+	free(*current);
 }
 
-int node_length(Node *head) {
+void node_pop_front(Node **head) {
+	// Done if node is empty.
+	if (*head == NULL)
+		return;
+	// Delete the head if it's the only node.
+	if ((*head)->next == NULL) {
+		free(*head);
+		*head = NULL;
+		return;
+	}
+	// Delete the first element and make the second element the head.
+	Node *first = *head;
+	*head = first->next;
+	free(first);
+	return;
+}
+
+size_t node_length(Node *head) {
 	if (head == NULL)
 		return 0;
-	else {
-		Node *current = head;
-		int count = 1;
-		while (current != NULL) {
-			current = current->next;
-			count++;
-		}
-		return count;
+	// Continue until last element.
+	Node *current = head;
+	size_t count = 1;
+	while (current != NULL) {
+		current = current->next;
+		count++;
 	}
+	return count;
 }
 
 #endif
