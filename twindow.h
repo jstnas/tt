@@ -83,54 +83,53 @@ void twindow_draw(TWindow *win) {
 	mvwprintw(win->window, 0, 0, "30");
 
 	// Draw the sentence.
-
-	/*
 	size_t line_length = 0;
 	size_t row = 1;
 	wmove(win->window, row, 0);
 	Node *t_word = win->t_sen;
-	while (t_word != NULL) {
+	Node *i_word = win->i_sen;
+	// Continue until the longer sentence is printed.
+	while (t_word != NULL || i_word != NULL) {
 		Node *t_char = t_word == NULL ? NULL : t_word->data;
-		while (t_char != NULL) {
-			waddch(win->window, *(char*)t_char->data);
+		Node *i_char = i_word == NULL ? NULL : i_word->data;
+		// Continue until the longer word is printed.
+		while (t_char != NULL || i_char != NULL) {
+			char character;
+			int pair = 0;
+			// If target is empty, means we've typed too much.
+			if (t_char == NULL) {
+				character = *(char *)i_char->data;
+				pair = 3;
+			}
+			// If input is empty, means we haven't typed far enough.
+			else if (i_char == NULL) {
+				character = *(char *)t_char->data;
+				pair = 1;
+			}
+			// Compare characters.
+			else {
+				character = *(char *)t_char->data;
+				// Character match.
+				if (*(char *)t_char->data == *(char *)i_char->data)
+					pair = 2;
+				// Otherwise it's wrong.
+				else
+					pair = 3;
+			}
+			waddch(win->window, character | COLOR_PAIR(pair));
 			line_length++;
 			t_char = t_char == NULL ? NULL : t_char->next;
-		}
-		// Add a space or wrap the word.
-		if (t_word != NULL && t_word->next != NULL)
-		{
-			if (node_length(t_word->next->data) + line_length <= size.x) {
-				waddch(win->window, ' ');
-				line_length++;
-			}
-			else {
-				row++;
-				wmove(win->window, row, 0);
-				line_length = 0;
-				// Stop drawing if hit last column.
-				if (row == TWINDOW_HEIGHT)
-					break;
-			}
-		}
-		t_word = t_word == NULL ? NULL : t_word->next;
-	}
-	*/
-
-	
-	size_t row = 1;
-	size_t line_length = 0;
-	wmove(win->window, row, 0);
-	Node *i_word = win->i_sen;
-	while (i_word != NULL) {
-		Node *i_char = i_word == NULL ? NULL : i_word->data;
-		while(i_char != NULL) {
-			waddch(win->window, *(char *)i_char->data);
-			line_length++;
 			i_char = i_char == NULL ? NULL : i_char->next;
 		}
-		if (i_word != NULL && i_word->next != NULL)
-		{
-			if (node_length(i_word->next->data) + line_length <= size.x) {
+		// At the end of the word, add a space.
+		// Only add a space if there are more words.
+		size_t word_length = 0;
+		if (t_word != NULL && t_word->next != NULL)
+			word_length = node_length(t_word->next->data);
+		else if (i_word != NULL && i_word->next != NULL)
+			word_length = node_length(i_word->next->data);
+		if (word_length > 0) {
+			if (word_length + line_length <= size.x) {
 				waddch(win->window, ' ');
 				line_length++;
 			}
@@ -143,9 +142,10 @@ void twindow_draw(TWindow *win) {
 					break;
 			}
 		}
+		// Advance to the next word.
+		t_word = t_word == NULL ? NULL : t_word->next;
 		i_word = i_word == NULL ? NULL : i_word->next;
 	}
-	
 
 	wmove(win->window, win->cursor.y, win->cursor.x);
 

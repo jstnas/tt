@@ -25,11 +25,17 @@ void t_destroy(void *twindow);
 int main() {
 	// Init.
 	initscr();
+	start_color();
+	use_default_colors();
 	noecho();
 	cbreak();
 
 	screen_size = (Vector2 *)malloc(sizeof(Vector2));
 	*screen_size = get_window_size(stdscr);
+
+	init_pair(1, 8, -1);
+	init_pair(2, 7, -1);
+	init_pair(3, 1, -1);
 
 	// Create windows.
 	char *menu_options[] = {"Restart", "Options", "Exit", NULL};
