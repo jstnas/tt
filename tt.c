@@ -1,4 +1,5 @@
 #include <time.h>
+#include "config.h"
 #include "menu.h"
 #include "twindow.h"
 #include "window.h"
@@ -24,10 +25,12 @@ void t_destroy(void *twindow);
 
 int main() {
 	// Init.
+	setenv("ESCDELAY", escape_delay, 0);
 	initscr();
 	start_color();
 	use_default_colors();
 	noecho();
+	raw();
 	cbreak();
 
 	screen_size = (Vector2 *)malloc(sizeof(Vector2));
@@ -92,6 +95,8 @@ void m_update(void *menu) {
 	int result = menu_update((Menu *)menu);
 	if (result == 2)
 		running = 0;
+	else if (result == -2)
+		target_window = 1;
 }
 
 void m_draw(void *menu) { menu_draw((Menu *)menu); };
@@ -100,6 +105,8 @@ void m_destroy(void *menu) { menu_destroy((Menu *)menu); };
 // Typing window functions.
 void t_update(void *twindow) {
 	int result = twindow_update((TWindow *)twindow);
+	if (result == 1)
+		target_window = 0;
 }
 
 void t_draw(void *twindow) { twindow_draw((TWindow *)twindow); };

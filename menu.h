@@ -1,11 +1,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ncurses.h>
+#include "config.h"
 #include "vector2.h"
-
-#define MENU_UP 107
-#define MENU_DOWN 106
-#define MENU_RETURN 10
 
 typedef struct Menu Menu;
 struct Menu {
@@ -65,23 +62,26 @@ void menu_destroy(Menu *menu) {
 }
 
 int menu_update(Menu *menu) {
-	int c = wgetch(menu->window);
-	switch (c) {
-		case MENU_UP:
-			if (menu->current_option == 0)
-				menu->current_option = menu->option_count - 1;
-			else
-				menu->current_option--;
-			break;
-		case MENU_DOWN:
-			if (menu->current_option == menu->option_count - 1)
-				menu->current_option = 0;
-			else
-				menu->current_option++;
-			break;
-		case MENU_RETURN:
-			return menu->current_option;
+	int input = wgetch(menu->window);
+	// Cycle options.
+	if (input == key_up) {
+		if (menu->current_option == 0)
+			menu->current_option = menu->option_count - 1;
+		else
+			menu->current_option--;
 	}
+	else if (input == key_down) {
+		if (menu->current_option == menu->option_count - 1)
+			menu->current_option = 0;
+		else
+			menu->current_option++;
+	}
+	// Return the selected option.
+	else if (input == key_submit)
+		return menu->current_option;
+	// Go back to typing.
+	else if (input == key_menu)
+		return -2;
 	return -1;
 }
 
