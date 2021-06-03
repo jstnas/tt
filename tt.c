@@ -36,9 +36,9 @@ int main() {
 	screen_size = (Vector2 *)malloc(sizeof(Vector2));
 	*screen_size = get_window_size(stdscr);
 
-	init_pair(1, 8, -1);
-	init_pair(2, 7, -1);
-	init_pair(3, 1, -1);
+	init_pair(1, color_foreground, color_background);
+	init_pair(2, color_correct, color_background);
+	init_pair(3, color_incorrect, color_background);
 
 	// Create windows.
 	char *menu_options[] = {"Restart", "Options", "Exit", NULL};

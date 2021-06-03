@@ -18,6 +18,7 @@ struct TWindow {
 	Vector2 *screen_size;
 	Vector2 size;
 	Vector2 position;
+	size_t word_offset = 0;
 
 	Node *t_sen;
 	Node *i_sen;
@@ -126,20 +127,23 @@ void twindow_draw(TWindow *win) {
 			t_char = t_char == NULL ? NULL : t_char->next;
 			i_char = i_char == NULL ? NULL : i_char->next;
 		}
-		// At the end of the word, add a space.
-		// Only add a space if there are more words.
+		// Work out the next longest word.
 		size_t word_length = 0;
 		if (t_word != NULL && t_word->next != NULL)
 			word_length = node_length(t_word->next->data);
 		else if (i_word != NULL && i_word->next != NULL) {
-			word_length = node_length(i_word->next->data);
+			size_t i_word_length = node_length(i_word->next->data);
+			if (i_word_length > word_length)
+				word_length = i_word_length;
 		}
+		// Skip if there are no more words.
 		if (word_length > 0) {
+			// Add a space if there is enough space for the next word.
 			if (word_length + line_length <= size.x) {
 				waddch(win->window, ' ');
 				line_length++;
 			}
-			// Go onto the next line.
+			// Otherwise go to the next line.
 			else {
 				row++;
 				wmove(win->window, row, 0);
