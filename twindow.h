@@ -18,7 +18,7 @@ struct TWindow {
 	Vector2 *screen_size;
 	Vector2 size;
 	Vector2 position;
-	size_t word_offset = 0;
+	size_t word_offset;
 
 	Node *t_sen;
 	Node *i_sen;
@@ -54,19 +54,16 @@ void twindow_destroy(TWindow *win) {
 int twindow_update(TWindow *win) {
 	int input = wgetch(win->window);
 
-	switch (input) {
-		case TWINDOW_BACKSPACE:
-			remove_input_key(&win->i_sen);
-			break;
-		case TWINDOW_SPACE:
-			add_input_word(&win->i_sen);
-			break;
-		case TWINDOW_ESCAPE:
-			return 1;
-		default:
-			if (is_key_allowed((char)input))
-				add_input_key(&win->i_sen, input);
+	if (input == key_back) {
+		remove_input_key(&win->i_sen);
+	} else if (input == key_space) {
+		add_input_word(&win->i_sen);
+	} else if (input == key_menu) {
+		return 1;
+	} else if (is_key_allowed((char)input)) {
+		add_input_key(&win->i_sen, input);
 	}
+
 	return -1;
 }
 
