@@ -105,24 +105,29 @@ void twindow_draw(TWindow *win) {
 				*(char *)t_char->data;
 			// Choose the color pair.
 			int pair = 3;
-
-			if (i_char == NULL)
+			// Normal if haven't reached this point.
+			if (i_char == NULL && i_word != NULL && i_word->next == NULL)
 				pair = 1;
-			else if (t_char != NULL &&
+			else if (i_word == NULL)
+				pair = 1;
+			// Correct if characters match.
+			else if (t_char != NULL && i_char != NULL &&
 					*(char *)t_char->data == *(char *)i_char->data) {
 				pair = 2;
 				getyx(win->window, cursor.y, cursor.x);
 				cursor.x++;
 			}
+			// Update cursor position even if you get the wrong character.
 			else if (i_char != NULL) {
 				getyx(win->window, cursor.y, cursor.x);
 				cursor.x++;
 			}
-
+			// Draw the character.
 			waddch(win->window, character | COLOR_PAIR(pair));
-			line_length++;
+			// Advance to the next character.
 			t_char = t_char == NULL ? NULL : t_char->next;
 			i_char = i_char == NULL ? NULL : i_char->next;
+			line_length++;
 		}
 		// Work out the next longest word.
 		size_t word_length = 0;
@@ -139,9 +144,8 @@ void twindow_draw(TWindow *win) {
 			if (word_length + line_length <= size.x) {
 				waddch(win->window, ' ');
 				line_length++;
-			}
-			// Otherwise go to the next line.
-			else {
+			} else {
+				// Otherwise go to the next line.
 				row++;
 				wmove(win->window, row, 0);
 				line_length = 0;

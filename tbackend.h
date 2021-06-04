@@ -73,12 +73,11 @@ void remove_input_key(Node **input_sentence) {
 }
 
 void add_input_word(Node **input_sentence) {
-	// Skip if the sentence is empty.
-	if (*input_sentence == NULL)
+	// Add a space character if the current sentence is empty.
+	if (*input_sentence == NULL || node_tail(*input_sentence)->data == NULL) {
+		add_input_key(input_sentence, ' ');
 		return;
-	// Prevent consecutive spaces.
-	if (node_tail(*input_sentence)->data == NULL)
-		return;
+	}
 	// Add a new word.
 	node_push(input_sentence, NULL);
 }
