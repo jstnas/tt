@@ -134,7 +134,7 @@ void twindow_draw(TWindow *win) {
 		size_t word_length = 0;
 		if (t_word != NULL && t_word->next != NULL)
 			word_length = node_length(t_word->next->data);
-		else if (i_word != NULL && i_word->next != NULL) {
+		if (i_word != NULL && i_word->next != NULL) {
 			size_t i_word_length = node_length(i_word->next->data);
 			if (i_word_length > word_length)
 				word_length = i_word_length;
