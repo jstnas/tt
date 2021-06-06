@@ -5,13 +5,6 @@
 #include "vector2.h"
 #include "tbackend.h"
 
-#define TWINDOW_SPACE 32
-#define TWINDOW_BACKSPACE 263
-#define TWINDOW_ESCAPE 27
-
-#define TWINDOW_WIDTH 80
-#define TWINDOW_HEIGHT 4
-
 typedef struct TWindow TWindow;
 struct TWindow {
 	WINDOW *window;
@@ -40,7 +33,7 @@ TWindow *twindow_init(Vector2 *screen_size) {
 
 	// Create the target sentence.
 	srand(time(NULL));
-	const size_t target_length = TWINDOW_WIDTH * (TWINDOW_HEIGHT - 1);
+	const size_t target_length = window_width * (window_height - 1);
 	win->t_sen = init_target_sentence(target_length);
 	win->i_sen = NULL;
 
@@ -69,8 +62,8 @@ int twindow_update(TWindow *win) {
 
 void twindow_draw(TWindow *win) {
 	Vector2 size = {
-		.x = min(TWINDOW_WIDTH, win->screen_size->x),
-		.y = min(TWINDOW_HEIGHT, win->screen_size->y)
+		.x = min(window_width, win->screen_size->x),
+		.y = min(window_height, win->screen_size->y)
 	};
 	wresize(win->window, size.y, size.x);
 
@@ -150,7 +143,7 @@ void twindow_draw(TWindow *win) {
 				wmove(win->window, row, 0);
 				line_length = 0;
 				// Stop drawing if hit last column.
-				if (row == TWINDOW_HEIGHT)
+				if (row == window_height)
 					break;
 			}
 			if (i_word != NULL && i_word->next != NULL)

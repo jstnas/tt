@@ -15,4 +15,7 @@ static unsigned key_menu = 27;
 static unsigned key_back = 263;
 static unsigned key_space = 32;
 
+static unsigned window_width = 80;
+static unsigned window_height = 4;
+
 #endif
