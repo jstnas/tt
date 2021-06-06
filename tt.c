@@ -86,8 +86,19 @@ Vector2 get_window_size(WINDOW *window) {
 // Menu window functions.
 void m_update(void *menu) {
 	int result = menu_update((Menu *)menu);
-	if (result == 2)
+	// Restart.
+	if (result == 0) {
+		// Destroy twindow.
+		windows[1]->destroy(windows[1]);
+		// Create new twindow.
+		TWindow *twindow = twindow_init(screen_size);
+		windows[1] = window_init(twindow, t_update, t_draw, t_destroy);
+		target_window = 1;
+	}
+	// Exit.
+	else if (result == 2)
 		running = 0;
+	// Escape.
 	else if (result == -2)
 		target_window = 1;
 }
@@ -98,7 +109,8 @@ void m_destroy(void *menu) { menu_destroy((Menu *)menu); };
 // Typing window functions.
 void t_update(void *twindow) {
 	int result = twindow_update((TWindow *)twindow);
-	if (result == 1)
+	// Escape.
+	if (result == -2)
 		target_window = 0;
 }
 

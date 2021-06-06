@@ -56,7 +56,7 @@ int twindow_update(TWindow *win) {
 	else if (input == key_space)
 		add_input_word(&win->i_sen);
 	else if (input == key_menu)
-		return 1;
+		return -2;
 	else if (is_key_allowed((char)input))
 		add_input_key(&win->i_sen, input);
 
