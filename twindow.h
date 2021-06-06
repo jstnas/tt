@@ -78,7 +78,7 @@ void twindow_draw(TWindow *win) {
 	mvwin(win->window, position.y, position.x);
 
 	wclear(win->window);
-//	box(win->window, 0, 0);
+	box(win->window, 0, 0);
 
 	// Draw the stats.
 	mvwprintw(win->window, 0, 0, "30");
@@ -105,7 +105,7 @@ void twindow_draw(TWindow *win) {
 			const char character = t_char == NULL ? *(char *)i_char->data :
 				*(char *)t_char->data;
 			// Choose the color pair.
-			int pair = 3;
+			short pair = 3;
 			// Normal if haven't reached this point.
 			if (i_char == NULL && i_word != NULL && i_word->next == NULL)
 				pair = 1;
@@ -131,14 +131,7 @@ void twindow_draw(TWindow *win) {
 			line_length++;
 		}
 		// Work out the next longest word.
-		size_t word_length = 0;
-		if (t_word != NULL && t_word->next != NULL)
-			word_length = node_length(t_word->next->data);
-		if (i_word != NULL && i_word->next != NULL) {
-			size_t i_word_length = node_length(i_word->next->data);
-			if (i_word_length > word_length)
-				word_length = i_word_length;
-		}
+		size_t word_length = next_word_length(t_word, i_word);
 		// Skip if there are no more words.
 		if (word_length > 0) {
 			// Add a space if there is enough space for the next word.

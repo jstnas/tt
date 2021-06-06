@@ -12,6 +12,7 @@ Node *init_target_sentence(const size_t target_length);
 void add_input_key(Node **input_sentence, const int key);
 void remove_input_key(Node **input_sentence);
 void add_input_word(Node **input_sentence);
+size_t next_word_length(Node *t_word, Node *i_word);
 
 bool is_key_allowed(const char key) {
 	for (size_t k = 0; k < allowed_key_count; k++) {
@@ -80,6 +81,18 @@ void add_input_word(Node **input_sentence) {
 	}
 	// Add a new word.
 	node_push(input_sentence, NULL);
+}
+
+size_t next_word_length(Node *t_word, Node *i_word) {
+	size_t length = 0;
+	if (t_word != NULL && t_word->next != NULL)
+		length = node_length(t_word->next->data);
+	if (i_word != NULL && i_word->next != NULL) {
+		size_t i_length = node_length(i_word->next->data);
+		if (i_length > length)
+			return i_length;
+	}
+	return length;
 }
 
 #endif
