@@ -31,10 +31,13 @@ TWindow *twindow_init(Vector2 *screen_size) {
 	win->window = newwin(0, 0, 0, 0);
 	keypad(win->window, TRUE);
 
+	win->word_offset = 0;
+
 	// Create the target sentence.
 	srand(time(NULL));
 	const size_t target_length = window_width * (window_height - 1);
 	win->t_sen = init_target_sentence(target_length);
+
 	win->i_sen = NULL;
 
 	return win;
@@ -48,15 +51,14 @@ void twindow_destroy(TWindow *win) {
 int twindow_update(TWindow *win) {
 	int input = wgetch(win->window);
 
-	if (input == key_back) {
+	if (input == key_back)
 		remove_input_key(&win->i_sen);
-	} else if (input == key_space) {
+	else if (input == key_space)
 		add_input_word(&win->i_sen);
-	} else if (input == key_menu) {
+	else if (input == key_menu)
 		return 1;
-	} else if (is_key_allowed((char)input)) {
+	else if (is_key_allowed((char)input))
 		add_input_key(&win->i_sen, input);
-	}
 
 	return -1;
 }
@@ -88,6 +90,11 @@ void twindow_draw(TWindow *win) {
 	wmove(win->window, row, 0);
 	Node *t_word = win->t_sen;
 	Node *i_word = win->i_sen;
+	// Offset the sentence.
+	for (size_t o = 0; o < win->word_offset; o++) {
+		t_word = t_word == NULL ? NULL : t_word->next;
+		i_word = i_word == NULL ? NULL : i_word->next;
+	}
 	// Continue until the longer sentence is printed.
 	while (t_word != NULL || i_word != NULL) {
 		Node *t_char = t_word == NULL ? NULL : t_word->data;
@@ -155,6 +162,7 @@ void twindow_draw(TWindow *win) {
 		i_word = i_word == NULL ? NULL : i_word->next;
 	}
 
+	// Position the cursor.
 	wmove(win->window, cursor.y, cursor.x);
 
 	wrefresh(win->window);

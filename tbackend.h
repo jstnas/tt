@@ -32,7 +32,7 @@ Node *init_target_sentence(const size_t target_length) {
 		const size_t new_length = sentence_length + word_length + 1;
 		if (new_length > target_length)
 			break;
-		sentence_length += word_length;
+		sentence_length += word_length + 1;
 		Node *new_word = NULL;
 		for (size_t c = 0; c < word_length; c++)
 			node_push(&new_word, &words[word_index][c]);
