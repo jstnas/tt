@@ -41,7 +41,8 @@ TWindow *twindow_init(Vector2 *screen_size) {
 }
 
 void twindow_destroy(TWindow *win) {
-	return;
+	delwin(win->window);
+	free(win);
 }
 
 int twindow_update(TWindow *win) {

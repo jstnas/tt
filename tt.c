@@ -10,8 +10,7 @@ Vector2 *screen_size;
 size_t target_window = 1;
 int running = 1;
 
-void twin_update();
-void twin_draw();
+void draw();
 void destroy_windows();
 Vector2 get_window_size(WINDOW *window);
 
@@ -33,15 +32,15 @@ int main() {
 	raw();
 	cbreak();
 
-	screen_size = (Vector2 *)malloc(sizeof(Vector2));
-	*screen_size = get_window_size(stdscr);
-
 	init_pair(1, color_foreground, color_background);
 	init_pair(2, color_correct, color_background);
 	init_pair(3, color_incorrect, color_background);
 
+	screen_size = (Vector2 *)malloc(sizeof(Vector2));
+	*screen_size = get_window_size(stdscr);
+
 	// Create windows.
-	char *menu_options[] = {"Restart", "Options", "Exit", NULL};
+	char *menu_options[] = {"Restart", "Repeat", "Exit", NULL};
 	Vector2 padding = vector2_init(1, 1);
 	Menu *menu = menu_init("Menu", menu_options, padding, screen_size);
 	windows[0] = window_init(menu, m_update, m_draw, m_destroy);
@@ -50,17 +49,12 @@ int main() {
 	windows[1] = window_init(twindow, t_update, t_draw, t_destroy);
 
 	// Main loop.
-	mvprintw(0, 0, "tt");
-	refresh();
-	twin_draw();
+	draw();
 	while (running)
 	{
-		twin_update();
+		windows[target_window]->update(windows[target_window]->window);
 		*screen_size = get_window_size(stdscr);
-		clear();
-		mvprintw(0, 0, "tt");
-		refresh();
-		twin_draw();
+		draw();
 	}
 
 	// Exit.
@@ -70,11 +64,10 @@ int main() {
 	return 0;
 }
 
-void twin_update() {
-	windows[target_window]->update(windows[target_window]->window);
-}
-
-void twin_draw() {
+void draw() {
+	clear();
+	mvprintw(0, 0, "tt");
+	refresh();
 	windows[target_window]->draw(windows[target_window]->window);
 }
 
