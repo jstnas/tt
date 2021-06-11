@@ -137,10 +137,9 @@ void twindow_draw(TWindow *win) {
 				line_length++;
 			}
 		}
-		// Work out the next longest word.
-		size_t word_length = next_word_length(t_word, i_word);
 		// Skip if there are no more words.
-		if (word_length > 0) {
+		if (t_word != NULL || i_word != NULL) {
+			const size_t word_length = next_word_length(t_word, i_word);
 			// Add a space if there is enough space for the next word.
 			if (word_length + line_length <= size.x) {
 				waddch(win->window, ' ');
