@@ -36,7 +36,7 @@ TWindow *twindow_init(Vector2 *screen_size) {
 	// Create the target sentence.
 	srand(time(NULL));
 	const size_t target_length = window_width * (window_height - 1);
-	win->t_sen = sentence_init_words(10);
+	win->t_sen = sentence_init_length(target_length);
 
 	win->i_sen = NULL;
 
@@ -141,7 +141,7 @@ void twindow_draw(TWindow *win) {
 		if (t_word != NULL || i_word != NULL) {
 			const size_t word_length = next_word_length(t_word, i_word);
 			// Add a space if there is enough space for the next word.
-			if (word_length + line_length <= size.x) {
+			if (word_length + line_length < size.x) {
 				waddch(win->window, ' ');
 				line_length++;
 			} else {
