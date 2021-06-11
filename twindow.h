@@ -36,7 +36,7 @@ TWindow *twindow_init(Vector2 *screen_size) {
 	// Create the target sentence.
 	srand(time(NULL));
 	const size_t target_length = window_width * (window_height - 1);
-	win->t_sen = init_target_sentence(target_length);
+	win->t_sen = sentence_init_words(10);
 
 	win->i_sen = NULL;
 

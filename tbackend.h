@@ -4,11 +4,13 @@
 #include "node.h"
 #include "words.h"
 
+static size_t words_count = sizeof(words) / sizeof(*words);
 static char allowed_keys[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 static size_t allowed_key_count = sizeof(allowed_keys) / sizeof(char);
 
 bool is_key_allowed(const char key);
-Node *init_target_sentence(const size_t target_length);
+Node *sentence_init_length(const size_t target_length);
+Node *sentence_init_words(const size_t word_count);
 void add_input_key(Node **input_sentence, const int key);
 void remove_input_key(Node **input_sentence);
 void add_input_word(Node **input_sentence);
@@ -22,8 +24,8 @@ bool is_key_allowed(const char key) {
 	return false;
 }
 
-Node *init_target_sentence(const size_t target_length) {
-	Node *target_sentence = NULL;
+Node *sentence_init_length(const size_t target_length) {
+	Node *sentence = NULL;
 	size_t sentence_length = 0;
 
 	while (sentence_length < target_length) {
@@ -37,10 +39,22 @@ Node *init_target_sentence(const size_t target_length) {
 		Node *new_word = NULL;
 		for (size_t c = 0; c < word_length; c++)
 			node_push(&new_word, &words[word_index][c]);
-		node_push(&target_sentence, new_word);
+		node_push(&sentence, new_word);
 	}
+	return sentence;
+}
 
-	return target_sentence;
+Node *sentence_init_words(const size_t word_count) {
+	Node *sentence = NULL;
+	for (size_t w = 0; w < word_count; w++) {
+		const size_t word_index = rand() % words_count;
+		const size_t word_length = strlen(words[word_index]);
+		Node *word = NULL;
+		for (size_t c = 0; c < word_length; c++)
+			node_push(&word, &words[word_index][c]);
+		node_push(&sentence, word);
+	}
+	return sentence;
 }
 
 void add_input_key(Node **input_sentence, const int key) {
