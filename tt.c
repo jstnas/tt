@@ -37,7 +37,6 @@ int main() {
 	init_pair(3, color_incorrect, color_background);
 
 	screen_size = (Vector2 *)malloc(sizeof(Vector2));
-	*screen_size = get_window_size(stdscr);
 
 	// Create windows.
 	char *menu_options[] = {"Restart", "Repeat", "Exit", NULL};
@@ -49,12 +48,13 @@ int main() {
 	windows[1] = window_init(twindow, t_update, t_draw, t_destroy);
 
 	// Main loop.
-	draw();
 	while (running)
 	{
-		windows[target_window]->update(windows[target_window]->window);
+		// Draw.
 		*screen_size = get_window_size(stdscr);
 		draw();
+		// Update.
+		windows[target_window]->update(windows[target_window]->window);
 	}
 
 	// Exit.
