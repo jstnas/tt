@@ -128,7 +128,14 @@ void twindow_draw(TWindow *win) {
 			// Advance to the next character.
 			t_char = t_char == NULL ? NULL : t_char->next;
 			i_char = i_char == NULL ? NULL : i_char->next;
-			line_length++;
+			// Draw onto the next line.
+			if (line_length == size.x) {
+				line_length = 0;
+				row++;
+			}
+			else {
+				line_length++;
+			}
 		}
 		// Work out the next longest word.
 		size_t word_length = next_word_length(t_word, i_word);
