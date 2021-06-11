@@ -204,6 +204,4 @@ static char *words[] = {
 	"line"
 };
 
-static size_t word_count = sizeof(words) / sizeof(char *);
-
 #endif
