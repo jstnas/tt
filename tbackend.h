@@ -29,7 +29,7 @@ Node *sentence_init_length(const size_t target_length) {
 	size_t sentence_length = 0;
 
 	while (sentence_length < target_length) {
-		const size_t word_index = rand() % word_count;
+		const size_t word_index = rand() % words_count;
 		const size_t word_length = strlen(words[word_index]);
 		// Stop if the word would be too long.
 		const size_t new_length = sentence_length + word_length + 1;
