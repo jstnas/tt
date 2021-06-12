@@ -9,8 +9,8 @@ typedef struct TWindow TWindow;
 struct TWindow {
 	WINDOW *window;
 	Vector2 *screen_size;
-	Vector2 size;
 	Vector2 position;
+	Vector2 cursor;
 	size_t word_offset;
 
 	Node *t_sen;
@@ -31,6 +31,7 @@ TWindow *twindow_init(Vector2 *screen_size) {
 	win->window = newwin(0, 0, 0, 0);
 	keypad(win->window, TRUE);
 
+	win->cursor = vector2_init(0, 1);
 	win->word_offset = 0;
 
 	// Create the target sentence.
@@ -64,14 +65,14 @@ int twindow_update(TWindow *win) {
 }
 
 void twindow_draw(TWindow *win) {
-	Vector2 size = {
+	const Vector2 size = {
 		.x = min(window_width, win->screen_size->x),
 		.y = min(window_height, win->screen_size->y)
 	};
 	wresize(win->window, size.y, size.x);
 
 
-	Vector2 position = {
+	const Vector2 position = {
 		.x = (win->screen_size->x - size.x) / 2,
 		.y = (win->screen_size->y - size.y) / 2
 	};
@@ -80,16 +81,16 @@ void twindow_draw(TWindow *win) {
 	wclear(win->window);
 	box(win->window, 0, 0);
 
-	// Draw the stats.
-	mvwprintw(win->window, 0, 0, "30");
-
 	// Draw the sentence.
-	Vector2 cursor = vector2_init(0, 1);
 	size_t line_length = 0;
 	size_t row = 1;
 	wmove(win->window, row, 0);
 	Node *t_word = win->t_sen;
 	Node *i_word = win->i_sen;
+	// Move up a line if on the last line.
+	if (win->cursor.y == size.y - 1) {
+		win->word_offset += 5;
+	}
 	// Offset the sentence.
 	for (size_t o = 0; o < win->word_offset; o++) {
 		t_word = t_word == NULL ? NULL : t_word->next;
@@ -115,13 +116,13 @@ void twindow_draw(TWindow *win) {
 			else if (t_char != NULL && i_char != NULL &&
 					*(char *)t_char->data == *(char *)i_char->data) {
 				pair = 2;
-				getyx(win->window, cursor.y, cursor.x);
-				cursor.x++;
+				getyx(win->window, win->cursor.y, win->cursor.x);
+				win->cursor.x++;
 			}
 			// Update cursor position even if you get the wrong character.
 			else if (i_char != NULL) {
-				getyx(win->window, cursor.y, cursor.x);
-				cursor.x++;
+				getyx(win->window, win->cursor.y, win->cursor.x);
+				win->cursor.x++;
 			}
 			// Draw the character.
 			waddch(win->window, character | COLOR_PAIR(pair));
@@ -154,14 +155,17 @@ void twindow_draw(TWindow *win) {
 					break;
 			}
 			if (i_word != NULL && i_word->next != NULL)
-				getyx(win->window, cursor.y, cursor.x);
+				getyx(win->window, win->cursor.y, win->cursor.x);
 		}
 		node_advance(&t_word);
 		node_advance(&i_word);
 	}
 
+	// Draw the stats.
+	mvwprintw(win->window, 0, 0, "%u", win->cursor.y);
+
 	// Position the cursor.
-	wmove(win->window, cursor.y, cursor.x);
+	wmove(win->window, win->cursor.y, win->cursor.x);
 
 	wrefresh(win->window);
 }
