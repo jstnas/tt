@@ -97,8 +97,8 @@ void twindow_draw(TWindow *win) {
 	}
 	// Continue until the longer sentence is printed.
 	while (t_word != NULL || i_word != NULL) {
-		Node *t_char = t_word == NULL ? NULL : t_word->data;
-		Node *i_char = i_word == NULL ? NULL : i_word->data;
+		Node *t_char = t_word == NULL ? NULL : (Node *)t_word->data;
+		Node *i_char = i_word == NULL ? NULL : (Node *)i_word->data;
 		// Continue until the longer word is printed.
 		while (t_char != NULL || i_char != NULL) {
 			// Choose the character to display.
@@ -126,8 +126,8 @@ void twindow_draw(TWindow *win) {
 			// Draw the character.
 			waddch(win->window, character | COLOR_PAIR(pair));
 			// Advance to the next character.
-			t_char = t_char == NULL ? NULL : t_char->next;
-			i_char = i_char == NULL ? NULL : i_char->next;
+			node_advance(&t_char);
+			node_advance(&i_char);
 			// Draw onto the next line.
 			if (line_length == size.x) {
 				line_length = 0;
@@ -156,9 +156,8 @@ void twindow_draw(TWindow *win) {
 			if (i_word != NULL && i_word->next != NULL)
 				getyx(win->window, cursor.y, cursor.x);
 		}
-		// Advance to the next word.
-		t_word = t_word == NULL ? NULL : t_word->next;
-		i_word = i_word == NULL ? NULL : i_word->next;
+		node_advance(&t_word);
+		node_advance(&i_word);
 	}
 
 	// Position the cursor.
