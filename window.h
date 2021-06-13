@@ -1,6 +1,8 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
+#include <stdlib.h>
+
 typedef struct Window Window;
 
 struct Window {

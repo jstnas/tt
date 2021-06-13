@@ -38,7 +38,7 @@ TWindow *twindow_init(Vector2 *screen_size) {
 
 	// Create the target sentence.
 	srand(time(NULL));
-	const size_t target_length = window_width * (window_height - 1);
+	const size_t target_length = target_width * (target_height - 1);
 	win->t_sen = sentence_init_length(target_length);
 
 	win->i_sen = NULL;
@@ -68,8 +68,8 @@ int twindow_update(TWindow *win) {
 
 void twindow_draw(TWindow *win) {
 	const Vector2 size = {
-		.x = min(window_width, win->screen_size->x),
-		.y = min(window_height, win->screen_size->y)
+		.x = min(target_width, win->screen_size->x),
+		.y = min(target_height, win->screen_size->y)
 	};
 	wresize(win->window, size.y, size.x);
 
@@ -153,7 +153,7 @@ void twindow_draw(TWindow *win) {
 				wmove(win->window, row, 0);
 				line_length = 0;
 				// Stop drawing if hit last column.
-				if (row == window_height)
+				if (row == target_height)
 					break;
 			}
 			if (i_word != NULL && i_word->next != NULL)
