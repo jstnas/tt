@@ -38,8 +38,8 @@ TWindow *twindow_init(Vector2 *screen_size) {
 
 	// Create the target sentence.
 	srand(time(NULL));
-	const size_t target_length = target_width * (target_height - 1);
-	win->t_sen = sentence_init_length(target_length);
+	const Vector2 sentence_size = vector2_init(target_width, target_height - 1);
+	win->t_sen = sentence_init_size(sentence_size);
 
 	win->i_sen = NULL;
 
@@ -164,7 +164,7 @@ void twindow_draw(TWindow *win) {
 	}
 
 	// Draw the stats.
-	mvwprintw(win->window, 0, 0, "%u", win->cursor.y);
+	mvwprintw(win->window, 0, 0, "%u %u", target_width, target_height);
 
 	// Position the cursor.
 	wmove(win->window, win->cursor.y, win->cursor.x);

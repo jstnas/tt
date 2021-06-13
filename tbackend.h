@@ -4,13 +4,14 @@
 #include <string.h>
 #include "node.h"
 #include "words.h"
+#include "vector2.h"
 
 static size_t words_count = sizeof(words) / sizeof(*words);
 static char allowed_keys[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 static size_t allowed_key_count = sizeof(allowed_keys) / sizeof(char);
 
 bool is_key_allowed(const char key);
-Node *sentence_init_length(const size_t target_length);
+Node *sentence_init_size(const Vector2 size);
 Node *sentence_init_words(const size_t word_count);
 void add_input_key(Node **input_sentence, const int key);
 void remove_input_key(Node **input_sentence);
@@ -25,18 +26,25 @@ bool is_key_allowed(const char key) {
 	return false;
 }
 
-Node *sentence_init_length(const size_t target_length) {
+Node *sentence_init_size(const Vector2 size) {
 	Node *sentence = NULL;
-	size_t sentence_length = 0;
 
-	while (sentence_length < target_length) {
+	Vector2 position = vector2_init(0, 1);
+
+	while (true) {
 		const size_t word_index = rand() % words_count;
 		const size_t word_length = strlen(words[word_index]);
 		// Stop if the word would be too long.
-		const size_t new_length = sentence_length + word_length + 1;
-		if (new_length > target_length)
-			break;
-		sentence_length += word_length + 1;
+		const size_t new_length = position.x + word_length + 1;
+		if (new_length >= size.x) {
+			// Return if on the last line.
+			if (position.y == size.y)
+				break;
+			// Move to the next line.
+			position.x = 0;
+			position.y++;
+		}
+		position.x += word_length + 1;
 		Node *new_word = NULL;
 		for (size_t c = 0; c < word_length; c++)
 			node_push(&new_word, &words[word_index][c]);
