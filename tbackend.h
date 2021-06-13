@@ -15,7 +15,7 @@ Node *sentence_init_words(const size_t word_count);
 void add_input_key(Node **input_sentence, const int key);
 void remove_input_key(Node **input_sentence);
 void add_input_word(Node **input_sentence);
-size_t next_word_length(Node *t_word, Node *i_word);
+size_t get_word_length(Node *t_word, Node *i_word);
 size_t line_word_count(const size_t window_width, Node *t_word, Node *i_word);
 
 bool is_key_allowed(const char key) {
@@ -99,12 +99,12 @@ void add_input_word(Node **input_sentence) {
 	node_push(input_sentence, NULL);
 }
 
-size_t next_word_length(Node *t_word, Node *i_word) {
+size_t get_word_length(Node *t_word, Node *i_word) {
 	size_t length = 0;
-	if (t_word != NULL && t_word->next != NULL)
-		length = node_length(t_word->next->data);
-	if (i_word != NULL && i_word->next != NULL) {
-		size_t i_length = node_length(i_word->next->data);
+	if (t_word != NULL)
+		length = node_length((Node *)t_word->data);
+	if (i_word != NULL) {
+		const size_t i_length = node_length((Node *)i_word->data);
 		if (i_length > length)
 			return i_length;
 	}
@@ -112,9 +112,12 @@ size_t next_word_length(Node *t_word, Node *i_word) {
 }
 
 size_t line_word_count(const size_t window_width, Node *t_word, Node *i_word) {
-	while (t_word != NULL && i_word != NULL) {
-
+	size_t word_count = 0;
+	while (t_word != NULL || i_word != NULL) {
+		node_advance(&t_word);
+		node_advance(&i_word);
 	}
+	return word_count;
 }
 
 #endif

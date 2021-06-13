@@ -1,7 +1,9 @@
 #ifndef TWINDOW_H
 #define TWINDOW_H
 
+#include <time.h>
 #include <ncurses.h>
+#include "config.h"
 #include "vector2.h"
 #include "tbackend.h"
 
@@ -93,8 +95,8 @@ void twindow_draw(TWindow *win) {
 	}
 	// Offset the sentence.
 	for (size_t o = 0; o < win->word_offset; o++) {
-		t_word = t_word == NULL ? NULL : t_word->next;
-		i_word = i_word == NULL ? NULL : i_word->next;
+		node_advance(&t_word);
+		node_advance(&i_word);
 	}
 	// Continue until the longer sentence is printed.
 	while (t_word != NULL || i_word != NULL) {
@@ -140,7 +142,7 @@ void twindow_draw(TWindow *win) {
 		}
 		// Skip if there are no more words.
 		if (t_word != NULL || i_word != NULL) {
-			const size_t word_length = next_word_length(t_word, i_word);
+			const size_t word_length = get_word_length(node_next(t_word), node_next(i_word));
 			// Add a space if there is enough space for the next word.
 			if (word_length + line_length < size.x) {
 				waddch(win->window, ' ');

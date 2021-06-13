@@ -11,6 +11,7 @@ struct Node
 };
 
 Node *node_tail(Node *head);
+Node *node_next(Node *node);
 void node_push(Node **head, void *data);
 void node_pop(Node **head);
 void node_pop_front(Node **head);
@@ -24,8 +25,12 @@ Node *node_tail(Node *head) {
 	// Get the last node in the list.
 	Node *current = head;
 	while (current->next != NULL)
-		current = current->next;
+		node_advance(&current);
 	return current;
+}
+
+Node *node_next(Node *node) {
+	return node == NULL ? NULL : node->next;
 }
 
 void node_push(Node **head, void *data) {
@@ -93,7 +98,7 @@ size_t node_length(Node *head) {
 	Node *current = head;
 	size_t count = 1;
 	while (current != NULL) {
-		current = current->next;
+		node_advance(&current);
 		count++;
 	}
 	return count;
