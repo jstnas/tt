@@ -16,7 +16,6 @@ void add_input_key(Node **input_sentence, const int key);
 void remove_input_key(Node **input_sentence);
 void add_input_word(Node **input_sentence);
 size_t get_word_length(Node *t_word, Node *i_word);
-size_t line_word_count(const size_t window_width, Node *t_word, Node *i_word);
 
 bool is_key_allowed(const char key) {
 	for (size_t k = 0; k < allowed_key_count; k++) {
@@ -109,15 +108,6 @@ size_t get_word_length(Node *t_word, Node *i_word) {
 			return i_length;
 	}
 	return length;
-}
-
-size_t line_word_count(const size_t window_width, Node *t_word, Node *i_word) {
-	size_t word_count = 0;
-	while (t_word != NULL || i_word != NULL) {
-		node_advance(&t_word);
-		node_advance(&i_word);
-	}
-	return word_count;
 }
 
 #endif
