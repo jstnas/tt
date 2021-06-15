@@ -125,14 +125,14 @@ size_t get_offset(const Vector2 size, Node *t_word, Node *i_word) {
 	size_t line_length = 0;
 	while (i_word != NULL) {
 		const size_t word_length = get_word_length(t_word, i_word);
-		if (line_length + word_length >= size.x) {
-			line_length = 0;
+		if (line_length + word_length > size.x) {
 			offset[0] += offset[1];
 			offset[1] = line_offset;
 			line_offset = 0;
+			line_length = 0;
 		}
-		line_length += word_length;
 		line_offset++;
+		line_length += word_length;
 		node_advance(&t_word);
 		node_advance(&i_word);
 	}
