@@ -78,7 +78,7 @@ void twindow_draw(TWindow *win) {
 	mvwin(win->window, position.y, position.x);
 
 	wclear(win->window);
-	box(win->window, 0, 0);
+//	box(win->window, 0, 0);
 
 	// Draw the sentence.
 	size_t line_length = 0;
