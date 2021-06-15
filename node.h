@@ -34,7 +34,7 @@ Node *node_next(Node *node) {
 }
 
 void node_push(Node **head, void *data) {
-	Node *new_node = (Node*)malloc(sizeof(Node));
+	Node *new_node = (Node *)malloc(sizeof(Node));
 	if (new_node == NULL)
 		return;
 	new_node->data = data;
@@ -49,6 +49,7 @@ void node_push(Node **head, void *data) {
 	last->next = new_node;
 }
 
+// TODO: return data so it can be freed.
 void node_pop(Node **head) {
 	// Done if node is empty.
 	if (*head == NULL)
