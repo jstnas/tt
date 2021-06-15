@@ -17,6 +17,7 @@ void add_input_key(Node **input_sentence, const int key);
 void remove_input_key(Node **input_sentence);
 void add_input_word(Node **input_sentence);
 size_t get_word_length(Node *t_word, Node *i_word);
+size_t get_offset(const Vector2 size, Node *t_word, Node *i_word);
 
 bool is_key_allowed(const char key) {
 	for (size_t k = 0; k < allowed_key_count; k++) {
@@ -118,4 +119,23 @@ size_t get_word_length(Node *t_word, Node *i_word) {
 	return length;
 }
 
+size_t get_offset(const Vector2 size, Node *t_word, Node *i_word) {
+	size_t offset[] = {0, 0};
+	size_t line_offset = 0;
+	size_t line_length = 0;
+	while (i_word != NULL) {
+		const size_t word_length = get_word_length(t_word, i_word);
+		if (line_length + word_length >= size.x) {
+			line_length = 0;
+			offset[0] += offset[1];
+			offset[1] = line_offset;
+			line_offset = 0;
+		}
+		line_length += word_length;
+		line_offset++;
+		node_advance(&t_word);
+		node_advance(&i_word);
+	}
+	return offset[0];
+}
 #endif

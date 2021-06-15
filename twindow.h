@@ -13,7 +13,6 @@ struct TWindow {
 	Vector2 *screen_size;
 	Vector2 position;
 	Vector2 cursor;
-	size_t word_offset;
 
 	Node *t_sen;
 	Node *i_sen;
@@ -34,7 +33,6 @@ TWindow *twindow_init(Vector2 *screen_size) {
 	keypad(win->window, TRUE);
 
 	win->cursor = vector2_init(0, 1);
-	win->word_offset = 0;
 
 	// Create the target sentence.
 	srand(time(NULL));
@@ -89,12 +87,9 @@ void twindow_draw(TWindow *win) {
 	wmove(win->window, row, 0);
 	Node *t_word = win->t_sen;
 	Node *i_word = win->i_sen;
-	// Move up a line if on the last line.
-	if (win->cursor.y == size.y - 1) {
-		win->word_offset += 5;
-	}
+	const size_t offset = get_offset(size, t_word, i_word);
 	// Offset the sentence.
-	for (size_t o = 0; o < win->word_offset; o++) {
+	for (size_t o = 0; o < offset; o++) {
 		node_advance(&t_word);
 		node_advance(&i_word);
 	}
@@ -164,7 +159,8 @@ void twindow_draw(TWindow *win) {
 	}
 
 	// Draw the stats.
-	mvwprintw(win->window, 0, 0, "%u %u", target_width, target_height);
+	mvwprintw(win->window, 0, 0, "%u %u", get_offset(size, win->t_sen, win->i_sen),
+			get_word_length(win->t_sen, win->i_sen));
 
 	// Position the cursor.
 	wmove(win->window, win->cursor.y, win->cursor.x);
