@@ -110,6 +110,7 @@ void m_destroy(void *menu) { menu_destroy((Menu *)menu); };
 void t_update(void *twindow) {
 	int result = twindow_update((TWindow *)twindow);
 	// Completed the test.
+	// TODO: Display stats.
 	if (result == 0) {
 		running = 0;
 	}
