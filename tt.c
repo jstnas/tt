@@ -109,8 +109,12 @@ void m_destroy(void *menu) { menu_destroy((Menu *)menu); };
 // Typing window functions.
 void t_update(void *twindow) {
 	int result = twindow_update((TWindow *)twindow);
+	// Completed the test.
+	if (result == 0) {
+		running = 0;
+	}
 	// Escape.
-	if (result == -2)
+	else if (result == -2)
 		target_window = 0;
 }
 

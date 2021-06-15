@@ -13,6 +13,7 @@ struct TWindow {
 	Vector2 *screen_size;
 	Vector2 position;
 	Vector2 cursor;
+	time_t start_time;
 
 	Node *t_sen;
 	Node *i_sen;
@@ -22,25 +23,20 @@ TWindow *twindow_init(Vector2 *screen_size);
 void twindow_destroy(TWindow *win);
 int twindow_update(TWindow *win);
 void twindow_draw(TWindow *win);
+bool twindow_complete_words(TWindow *win);
 unsigned min(unsigned a, unsigned b);
 
 TWindow *twindow_init(Vector2 *screen_size) {
 	TWindow *win = (TWindow *)malloc(sizeof(TWindow));
-
 	win->screen_size = screen_size;
-
 	win->window = newwin(0, 0, 0, 0);
 	keypad(win->window, TRUE);
-
 	win->cursor = vector2_init(0, 1);
-
+	win->start_time = time(NULL);
 	// Create the target sentence.
 	srand(time(NULL));
-	const Vector2 sentence_size = vector2_init(target_width, target_height - 1);
-	win->t_sen = sentence_init_size(sentence_size);
-
+	win->t_sen = sentence_init_words(50);
 	win->i_sen = NULL;
-
 	return win;
 }
 
@@ -60,6 +56,9 @@ int twindow_update(TWindow *win) {
 		return -2;
 	else if (is_key_allowed((char)input))
 		add_input_key(&win->i_sen, input);
+
+	if (twindow_complete_words(win))
+		return 0;
 
 	return -1;
 }
@@ -159,13 +158,26 @@ void twindow_draw(TWindow *win) {
 	}
 
 	// Draw the stats.
-	mvwprintw(win->window, 0, 0, "%u %u", get_offset(size, win->t_sen, win->i_sen),
-			get_word_length(win->t_sen, win->i_sen));
+	mvwprintw(win->window, 0, 0, "%u", time(NULL) - win->start_time);
 
 	// Position the cursor.
 	wmove(win->window, win->cursor.y, win->cursor.x);
 
 	wrefresh(win->window);
+}
+
+bool twindow_complete_words(TWindow *win) {
+	const size_t i_sen_length = node_length(win->i_sen);
+	const size_t t_sen_length = node_length(win->t_sen);
+	if (i_sen_length > t_sen_length)
+		return true;
+	else if (i_sen_length < t_sen_length)
+		return false;
+	const size_t i_word_length = node_length((Node *)node_tail(win->i_sen)->data);
+	const size_t t_word_length = node_length((Node *)node_tail(win->t_sen)->data);
+	if (i_word_length >= t_word_length)
+		return true;
+	return false;
 }
 
 unsigned min(unsigned a, unsigned b) {
