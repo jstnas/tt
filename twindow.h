@@ -17,6 +17,7 @@ struct TWindow {
 
 	Node *t_sen;
 	Node *i_sen;
+	Node *mistakes;
 };
 
 TWindow *twindow_init(Vector2 *screen_size);
@@ -46,20 +47,26 @@ void twindow_destroy(TWindow *win) {
 }
 
 int twindow_update(TWindow *win) {
-	int input = wgetch(win->window);
-
-	if (input == key_back)
-		remove_input_key(&win->i_sen);
-	else if (input == key_space)
-		add_input_word(&win->i_sen);
+	const int input = wgetch(win->window);
+	bool mistake = false;
+	if (input == key_back) {
+		if (!remove_input_key(&win->i_sen))
+			mistake = true;
+	}
+	else if (input == key_space) {
+		if (!add_input_word(&win->i_sen))
+			mistake = true;
+	}
 	else if (input == key_menu)
 		return -2;
-	else if (is_key_allowed((char)input))
-		add_input_key(&win->i_sen, input);
-
+	else if (is_key_allowed((char)input)) {
+		if (!add_input_key(&win->i_sen, input))
+			mistake = true;
+	}
+	if (mistake)
+		add_mistake(&win->mistakes);
 	if (twindow_complete_words(win))
 		return 0;
-
 	return -1;
 }
 
@@ -158,7 +165,7 @@ void twindow_draw(TWindow *win) {
 	}
 
 	// Draw the stats.
-	mvwprintw(win->window, 0, 0, "%u", time(NULL) - win->start_time);
+	mvwprintw(win->window, 0, 0, "%u", node_length(win->mistakes));
 
 	// Position the cursor.
 	wmove(win->window, win->cursor.y, win->cursor.x);

@@ -2,6 +2,7 @@
 #define TBACKEND_H
 
 #include <string.h>
+#include <time.h>
 #include "node.h"
 #include "words.h"
 #include "vector2.h"
@@ -13,9 +14,10 @@ static size_t allowed_key_count = sizeof(allowed_keys) / sizeof(char);
 bool is_key_allowed(const char key);
 Node *sentence_init_size(const Vector2 size);
 Node *sentence_init_words(const size_t word_count);
-void add_input_key(Node **input_sentence, const int key);
-void remove_input_key(Node **input_sentence);
-void add_input_word(Node **input_sentence);
+bool add_input_key(Node **input_sentence, const int key);
+bool remove_input_key(Node **input_sentence);
+bool add_input_word(Node **input_sentence);
+void add_mistake(Node **mistakes);
 size_t get_word_length(Node *t_word, Node *i_word);
 size_t get_offset(const Vector2 size, Node *t_word, Node *i_word);
 
@@ -67,7 +69,8 @@ Node *sentence_init_words(const size_t word_count) {
 	return sentence;
 }
 
-void add_input_key(Node **input_sentence, const int key) {
+// TODO: return bool to indicate if a mistake was made.
+bool add_input_key(Node **input_sentence, const int key) {
 	char *character = (char *)malloc(sizeof(char));
 	*character = (char)key;
 	// Create new word if sentence is empty.
@@ -75,36 +78,46 @@ void add_input_key(Node **input_sentence, const int key) {
 		Node *new_word = NULL;
 		node_push(&new_word, character);
 		node_push(input_sentence, new_word);
-		return;
 	}
-	Node *last_word = node_tail(*input_sentence);
-	node_push((Node **)&last_word->data, character);
+	else {
+		Node *last_word = node_tail(*input_sentence);
+		node_push((Node **)&last_word->data, character);
+	}
+	return true;
 }
 
-void remove_input_key(Node **input_sentence) {
+// TODO: return bool to indicate if a mistake was made.
+bool remove_input_key(Node **input_sentence) {
 	// Skip if already empty.
 	if (*input_sentence == NULL)
-		return;
+		return false;
 	// Otherwise remove from the last word.
 	Node *last_word = node_tail(*input_sentence);
 	// Remove the word if it is empty.
 	if (last_word->data == NULL)
 		node_pop(input_sentence);
 	// Remove the last character otherwise.
-	else {
+	else
 		node_pop((Node **)&last_word->data);
-	}
-
+	return true;
 }
 
-void add_input_word(Node **input_sentence) {
+bool add_input_word(Node **input_sentence) {
 	// Add a space character if the current sentence is empty.
 	if (*input_sentence == NULL || node_tail(*input_sentence)->data == NULL) {
 		add_input_key(input_sentence, ' ');
-		return;
+		return false;
 	}
 	// Add a new word.
+	// TODO: Check if space was the correct key.
 	node_push(input_sentence, NULL);
+	return true;
+}
+
+void add_mistake(Node **mistakes) {
+	time_t *mistake = (time_t *)malloc(sizeof(time_t));
+	*mistake = time(NULL);
+	node_push(mistakes, mistake);
 }
 
 size_t get_word_length(Node *t_word, Node *i_word) {

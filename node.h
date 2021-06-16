@@ -54,13 +54,11 @@ void node_pop(Node **head) {
 	// Done if node is empty.
 	if (*head == NULL)
 		return;
-
 	if ((*head)->next == NULL) {
 		free(*head);
 		*head = NULL;
 		return;
 	}
-
 	Node **current = head;
 	Node **previous = NULL;
 	while ((*current)->next != NULL) {
