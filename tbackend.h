@@ -133,23 +133,29 @@ size_t get_word_length(Node *t_word, Node *i_word) {
 }
 
 size_t get_offset(const Vector2 size, Node *t_word, Node *i_word) {
-	size_t offset[] = {0, 0};
+	size_t offset = 0;
+	// Adds a one line buffer, so you can see the previous line.
+	size_t buffer = 0;
 	size_t line_offset = 0;
 	size_t line_length = 0;
 	while (i_word != NULL) {
 		// TODO: figure out how to handle long words.
 		const size_t word_length = get_word_length(t_word, i_word);
+		// Word is too long.
 		if (line_length + word_length > size.x) {
-			offset[0] += offset[1];
-			offset[1] = line_offset;
-			line_offset = 0;
-			line_length = 0;
+			offset += buffer;
+			buffer = line_offset;
+			line_offset = 1;
+			line_length = word_length;
 		}
-		line_offset++;
-		line_length += word_length;
+		// Normal word.
+		else {
+			line_offset++;
+			line_length += word_length;
+		}
 		node_advance(&t_word);
 		node_advance(&i_word);
 	}
-	return offset[0];
+	return offset;
 }
 #endif

@@ -99,6 +99,8 @@ void twindow_draw(TWindow *win) {
 		node_advance(&t_word);
 		node_advance(&i_word);
 	}
+	// Reset cursor position.
+	win->cursor = vector2_init(0, 1);
 	// Continue until the longer sentence is printed.
 	while (t_word != NULL || i_word != NULL) {
 		Node *t_char = t_word == NULL ? NULL : (Node *)t_word->data;
