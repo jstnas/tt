@@ -91,16 +91,13 @@ void node_advance(Node **node) {
 }
 
 size_t node_length(Node *head) {
-	if (head == NULL)
-		return 0;
-	// Continue until last element.
+	size_t length = 0;
 	Node *current = head;
-	size_t count = 1;
 	while (current != NULL) {
 		node_advance(&current);
-		count++;
+		length++;
 	}
-	return count;
+	return length;
 }
 
 #endif
