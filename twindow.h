@@ -25,6 +25,7 @@ void twindow_destroy(TWindow *win);
 int twindow_update(TWindow *win);
 void twindow_draw(TWindow *win);
 bool twindow_complete_words(TWindow *win);
+void twindow_status_wpm(TWindow *win);
 unsigned min(unsigned a, unsigned b);
 
 TWindow *twindow_init(Vector2 *screen_size) {
@@ -85,7 +86,7 @@ void twindow_draw(TWindow *win) {
 	mvwin(win->window, position.y, position.x);
 
 	wclear(win->window);
-//	box(win->window, 0, 0);
+	box(win->window, 0, 0);
 
 	// Draw the sentence.
 	size_t line_length = 0;
@@ -147,7 +148,7 @@ void twindow_draw(TWindow *win) {
 		if (t_word != NULL || i_word != NULL) {
 			const size_t word_length = get_word_length(node_next(t_word), node_next(i_word));
 			// Add a space if there is enough space for the next word.
-			if (word_length + line_length < size.x) {
+			if (word_length + line_length + 1 < size.x) {
 				waddch(win->window, ' ');
 				line_length++;
 			} else {
@@ -167,7 +168,8 @@ void twindow_draw(TWindow *win) {
 	}
 
 	// Draw the stats.
-	mvwprintw(win->window, 0, 0, "%u", node_length(win->mistakes));
+	wmove(win->window, 0, 0);
+	twindow_status_wpm(win);
 
 	// Position the cursor.
 	wmove(win->window, win->cursor.y, win->cursor.x);
@@ -191,6 +193,11 @@ bool twindow_complete_words(TWindow *win) {
 
 unsigned min(unsigned a, unsigned b) {
 	return a < b ? a : b;
+}
+
+void twindow_status_wpm(TWindow *win) {
+	const size_t word_count = node_length(win->i_sen);
+	wprintw(win->window, "%u ", word_count);
 }
 
 #endif

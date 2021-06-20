@@ -140,9 +140,9 @@ size_t get_offset(const Vector2 size, Node *t_word, Node *i_word) {
 	size_t line_length = 0;
 	while (i_word != NULL) {
 		// TODO: figure out how to handle long words.
-		const size_t word_length = get_word_length(t_word, i_word);
+		const size_t word_length = get_word_length(t_word, i_word) + 1;
 		// Word is too long.
-		if (line_length + word_length > size.x) {
+		if (line_length + word_length >= size.x) {
 			offset += buffer;
 			buffer = line_offset;
 			line_offset = 1;
