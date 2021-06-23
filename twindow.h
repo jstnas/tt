@@ -26,6 +26,7 @@ int twindow_update(TWindow *win);
 void twindow_draw(TWindow *win);
 bool twindow_complete_words(TWindow *win);
 void twindow_status_wpm(TWindow *win);
+void twindow_status_time_taken(TWindow *win);
 unsigned min(unsigned a, unsigned b);
 
 TWindow *twindow_init(Vector2 *screen_size) {
@@ -34,7 +35,7 @@ TWindow *twindow_init(Vector2 *screen_size) {
 	win->window = newwin(0, 0, 0, 0);
 	keypad(win->window, TRUE);
 	win->cursor = vector2_init(0, 1);
-	win->start_time = time(NULL);
+	time(&win->start_time);
 	// Create the target sentence.
 	srand(time(NULL));
 	win->t_sen = sentence_init_words(50);
@@ -170,6 +171,7 @@ void twindow_draw(TWindow *win) {
 	// Draw the stats.
 	wmove(win->window, 0, 0);
 	twindow_status_wpm(win);
+	twindow_status_time_taken(win);
 
 	// Position the cursor.
 	wmove(win->window, win->cursor.y, win->cursor.x);
@@ -191,13 +193,18 @@ bool twindow_complete_words(TWindow *win) {
 	return false;
 }
 
-unsigned min(unsigned a, unsigned b) {
-	return a < b ? a : b;
-}
-
 void twindow_status_wpm(TWindow *win) {
 	const size_t word_count = node_length(win->i_sen);
 	wprintw(win->window, "%u ", word_count);
+}
+
+void twindow_status_time_taken(TWindow *win) {
+	const time_t time_taken = time(NULL) - win->start_time;
+	wprintw(win->window, "%u ", time_taken);
+}
+
+unsigned min(unsigned a, unsigned b) {
+	return a < b ? a : b;
 }
 
 #endif
