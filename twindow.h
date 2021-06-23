@@ -7,6 +7,7 @@
 #include "config.h"
 #include "vector2.h"
 #include "tbackend.h"
+#include "tmath.h"
 
 typedef struct TWindow TWindow;
 struct TWindow {
@@ -29,7 +30,6 @@ void twindow_draw(TWindow *win);
 bool twindow_complete_words(TWindow *win);
 void twindow_status_wpm(TWindow *win);
 void twindow_status_time_taken(TWindow *win);
-unsigned min(unsigned a, unsigned b);
 
 TWindow *twindow_init(Vector2 *screen_size, time_t seed) {
 	TWindow *win = (TWindow *)malloc(sizeof(TWindow));
@@ -197,18 +197,15 @@ bool twindow_complete_words(TWindow *win) {
 }
 
 void twindow_status_wpm(TWindow *win) {
-	const double word_count = (float)node_length(win->i_sen);
-	const double time_taken = (float)(time(NULL) - win->seed) / 60.0;
-	wprintw(win->window, "%u ", (unsigned)round(word_count / time_taken));
+	const size_t word_count = node_length(win->i_sen);
+	const double time_taken = (double)(time(NULL) - win->seed) / 60.0;
+	const unsigned wpm = (unsigned)round(word_count / time_taken);
+	wprintw(win->window, "%u ", wpm);
 }
 
 void twindow_status_time_taken(TWindow *win) {
 	const time_t time_taken = time(NULL) - win->seed;
 	wprintw(win->window, "%u ", time_taken);
-}
-
-unsigned min(unsigned a, unsigned b) {
-	return a < b ? a : b;
 }
 
 #endif

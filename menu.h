@@ -3,6 +3,7 @@
 #include <ncurses.h>
 #include "config.h"
 #include "vector2.h"
+#include "tmath.h"
 
 typedef struct Menu Menu;
 struct Menu {
@@ -12,7 +13,6 @@ struct Menu {
 	Vector2 *screen_size;
 	Vector2 padding;
 	Vector2 size;
-	Vector2 position;
 	size_t option_count;
 	int current_option;
 };
@@ -26,18 +26,15 @@ void menu_draw(Menu *menu);
 Menu *menu_init(char *title, char *options[], Vector2 padding,
 		Vector2 *screen_size) {
 	Menu *menu = (Menu *)malloc(sizeof(Menu));
-
 	menu->title = title;
 	menu->options = options;
 	menu->padding = padding;
 	menu->screen_size = screen_size;
-
 	// Work out the option count.
 	size_t option_count = 0;
 	while (options[option_count] != NULL)
 		option_count++;
 	menu->option_count = option_count;
-
 	// Work out the size of the menu.
 	// Width is based on the longest option.
 	menu->size.x = strlen(title) + (padding.x * 2);
@@ -49,9 +46,8 @@ Menu *menu_init(char *title, char *options[], Vector2 padding,
 	}
 	// Height is based on the amount of options.
 	menu->size.y = option_count + (padding.y * 2);
-
 	// Create the window.
-	menu->window = newwin(1, 1, 1, 1);
+	menu->window = newwin(0, 0, 0, 0);
 	keypad(menu->window,  TRUE);
 	return menu;
 }
@@ -86,14 +82,17 @@ int menu_update(Menu *menu) {
 }
 
 void menu_draw(Menu *menu) {
-	// Update the menu position.
-	menu->position.x = (menu->screen_size->x - menu->size.x) / 2;
-	menu->position.y = (menu->screen_size->y - menu->size.y) / 2;
-
-	// Move and resize the menu.
-	mvwin(menu->window, menu->position.y, menu->position.x);
-	wresize(menu->window, menu->size.y, menu->size.x);
-
+	// Update menu size and position.
+	const Vector2 size = {
+		.x = min(menu->size.x, menu->screen_size->x),
+		.y = min(menu->size.y, menu->screen_size->y)
+	};
+	const Vector2 position = {
+		.x = (menu->screen_size->x - size.x) / 2,
+		.y = (menu->screen_size->y - size.y) / 2
+	};
+	wresize(menu->window, size.y, size.x);
+	mvwin(menu->window, position.y, position.x);
 	// Draw a box around the menu.
 	box(menu->window, 0, 0);
 	// Draw the title.
