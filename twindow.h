@@ -2,6 +2,7 @@
 #define TWINDOW_H
 
 #include <time.h>
+#include <math.h>
 #include <ncurses.h>
 #include "config.h"
 #include "vector2.h"
@@ -13,6 +14,7 @@ struct TWindow {
 	Vector2 *screen_size;
 	Vector2 position;
 	Vector2 cursor;
+	time_t seed;
 	time_t start_time;
 
 	Node *t_sen;
@@ -20,7 +22,7 @@ struct TWindow {
 	Node *mistakes;
 };
 
-TWindow *twindow_init(Vector2 *screen_size);
+TWindow *twindow_init(Vector2 *screen_size, time_t seed);
 void twindow_destroy(TWindow *win);
 int twindow_update(TWindow *win);
 void twindow_draw(TWindow *win);
@@ -29,13 +31,13 @@ void twindow_status_wpm(TWindow *win);
 void twindow_status_time_taken(TWindow *win);
 unsigned min(unsigned a, unsigned b);
 
-TWindow *twindow_init(Vector2 *screen_size) {
+TWindow *twindow_init(Vector2 *screen_size, time_t seed) {
 	TWindow *win = (TWindow *)malloc(sizeof(TWindow));
 	win->screen_size = screen_size;
 	win->window = newwin(0, 0, 0, 0);
 	keypad(win->window, TRUE);
 	win->cursor = vector2_init(0, 1);
-	time(&win->start_time);
+	time(&win->seed);
 	// Create the target sentence.
 	srand(time(NULL));
 	win->t_sen = sentence_init_words(50);
@@ -179,6 +181,7 @@ void twindow_draw(TWindow *win) {
 	wrefresh(win->window);
 }
 
+// Complete function for words mode.
 bool twindow_complete_words(TWindow *win) {
 	const size_t i_sen_length = node_length(win->i_sen);
 	const size_t t_sen_length = node_length(win->t_sen);
@@ -194,12 +197,13 @@ bool twindow_complete_words(TWindow *win) {
 }
 
 void twindow_status_wpm(TWindow *win) {
-	const size_t word_count = node_length(win->i_sen);
-	wprintw(win->window, "%u ", word_count);
+	const double word_count = (float)node_length(win->i_sen);
+	const double time_taken = (float)(time(NULL) - win->seed) / 60.0;
+	wprintw(win->window, "%u ", (unsigned)round(word_count / time_taken));
 }
 
 void twindow_status_time_taken(TWindow *win) {
-	const time_t time_taken = time(NULL) - win->start_time;
+	const time_t time_taken = time(NULL) - win->seed;
 	wprintw(win->window, "%u ", time_taken);
 }
 

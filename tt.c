@@ -44,7 +44,7 @@ int main() {
 	Menu *menu = menu_init("Menu", menu_options, padding, screen_size);
 	windows[0] = window_init(menu, m_update, m_draw, m_destroy);
 
-	TWindow *twindow = twindow_init(screen_size);
+	TWindow *twindow = twindow_init(screen_size, time(NULL));
 	windows[1] = window_init(twindow, t_update, t_draw, t_destroy);
 
 	// Main loop.
@@ -91,7 +91,7 @@ void m_update(void *menu) {
 		// Destroy twindow.
 		windows[1]->destroy(windows[1]);
 		// Create new twindow.
-		TWindow *twindow = twindow_init(screen_size);
+		TWindow *twindow = twindow_init(screen_size, time(NULL));
 		windows[1] = window_init(twindow, t_update, t_draw, t_destroy);
 		target_window = 1;
 	}
