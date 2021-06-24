@@ -198,7 +198,7 @@ bool twindow_complete_words(TWindow *win) {
 
 void twindow_status_wpm(TWindow *win) {
 	const size_t word_count = node_length(win->i_sen);
-	const double time_taken = (double)(time(NULL) - win->seed) / 60.0;
+	const double time_taken = (time(NULL) - win->seed) / 60.0;
 	const unsigned wpm = (unsigned)round(word_count / time_taken);
 	wprintw(win->window, "%u ", wpm);
 }
