@@ -53,6 +53,10 @@ void twindow_destroy(TWindow *win) {
 int twindow_update(TWindow *win) {
 	const int input = wgetch(win->window);
 	bool mistake = false;
+	if (input == key_menu)
+		return -2;
+	if (win->start_time == 0)
+		time(&win->start_time);
 	if (input == key_back) {
 		if (!remove_input_key(&win->i_sen))
 			mistake = true;
@@ -61,8 +65,6 @@ int twindow_update(TWindow *win) {
 		if (!add_input_word(&win->i_sen))
 			mistake = true;
 	}
-	else if (input == key_menu)
-		return -2;
 	else if (is_key_allowed((char)input)) {
 		if (!add_input_key(&win->i_sen, input))
 			mistake = true;
@@ -198,7 +200,7 @@ bool twindow_complete_words(TWindow *win) {
 
 void twindow_status_wpm(TWindow *win) {
 	const size_t word_count = node_length(win->i_sen);
-	const double time_taken = (time(NULL) - win->seed) / 60.0;
+	const double time_taken = (time(NULL) - win->start_time) / 60.0;
 	const unsigned wpm = (unsigned)round(word_count / time_taken);
 	wprintw(win->window, "%u ", wpm);
 }
