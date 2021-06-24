@@ -17,7 +17,6 @@ struct TWindow {
 	Vector2 cursor;
 	time_t seed;
 	time_t start_time;
-
 	Node *t_sen;
 	Node *i_sen;
 	Node *mistakes;
@@ -34,12 +33,12 @@ void twindow_status_time_taken(TWindow *win);
 TWindow *twindow_init(Vector2 *screen_size, time_t seed) {
 	TWindow *win = (TWindow *)malloc(sizeof(TWindow));
 	win->screen_size = screen_size;
+	win->seed = seed;
 	win->window = newwin(0, 0, 0, 0);
 	keypad(win->window, TRUE);
 	win->cursor = vector2_init(0, 1);
-	time(&win->seed);
 	// Create the target sentence.
-	srand(time(NULL));
+	srand(seed);
 	win->t_sen = sentence_init_words(50);
 	win->i_sen = NULL;
 	return win;
@@ -53,24 +52,30 @@ void twindow_destroy(TWindow *win) {
 int twindow_update(TWindow *win) {
 	const int input = wgetch(win->window);
 	bool mistake = false;
+	bool set_start_time = false;
 	if (input == key_menu)
 		return -2;
-	if (win->start_time == 0)
-		time(&win->start_time);
 	if (input == key_back) {
+		set_start_time = true;
 		if (!remove_input_key(&win->i_sen))
 			mistake = true;
 	}
 	else if (input == key_space) {
+		set_start_time = true;
 		if (!add_input_word(&win->i_sen))
 			mistake = true;
 	}
 	else if (is_key_allowed((char)input)) {
+		set_start_time = true;
 		if (!add_input_key(&win->i_sen, input))
 			mistake = true;
 	}
 	if (mistake)
 		add_mistake(&win->mistakes);
+	// Set start time on first keypress.
+	if (win->start_time == 0 && set_start_time)
+		time(&win->start_time);
+	// Check if test is complete.
 	if (twindow_complete_words(win))
 		return 0;
 	return -1;
@@ -82,17 +87,13 @@ void twindow_draw(TWindow *win) {
 		.y = min(target_height, win->screen_size->y)
 	};
 	wresize(win->window, size.y, size.x);
-
-
 	const Vector2 position = {
 		.x = (win->screen_size->x - size.x) / 2,
 		.y = (win->screen_size->y - size.y) / 2
 	};
 	mvwin(win->window, position.y, position.x);
-
 	wclear(win->window);
 	box(win->window, 0, 0);
-
 	// Draw the sentence.
 	size_t line_length = 0;
 	size_t row = 1;
@@ -171,15 +172,12 @@ void twindow_draw(TWindow *win) {
 		node_advance(&t_word);
 		node_advance(&i_word);
 	}
-
 	// Draw the stats.
 	wmove(win->window, 0, 0);
 	twindow_status_wpm(win);
 	twindow_status_time_taken(win);
-
 	// Position the cursor.
 	wmove(win->window, win->cursor.y, win->cursor.x);
-
 	wrefresh(win->window);
 }
 
@@ -199,14 +197,24 @@ bool twindow_complete_words(TWindow *win) {
 }
 
 void twindow_status_wpm(TWindow *win) {
+	if (win->start_time == 0) {
+		wprintw(win->window, "0 ");
+		return;
+	}
+	// TODO: word count should be the amount of words typed correctly.
 	const size_t word_count = node_length(win->i_sen);
-	const double time_taken = (time(NULL) - win->start_time) / 60.0;
-	const unsigned wpm = (unsigned)round(word_count / time_taken);
+	const float time_taken = (time(NULL) - win->start_time) / 60.0;
+	const unsigned wpm = round(word_count / time_taken);
 	wprintw(win->window, "%u ", wpm);
 }
 
 void twindow_status_time_taken(TWindow *win) {
-	const time_t time_taken = time(NULL) - win->seed;
+	// Skip if start time hasn't been set.
+	if (win->start_time == 0) {
+		wprintw(win->window, "0 ");
+		return;
+	}
+	const time_t time_taken = time(NULL) - win->start_time;
 	wprintw(win->window, "%u ", time_taken);
 }
 
