@@ -183,6 +183,7 @@ void twindow_draw(TWindow *win) {
 	// Position the cursor.
 	wmove(win->window, win->cursor.y, win->cursor.x);
 	wrefresh(win->window);
+	curs_set(1);
 }
 
 // Complete function for words mode.

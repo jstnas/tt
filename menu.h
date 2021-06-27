@@ -130,4 +130,5 @@ void menu_draw(Menu *menu) {
 			wprintw(menu->window, menu->options[o]);
 	}
 	wrefresh(menu->window);
+	curs_set(0);
 }
