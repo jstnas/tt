@@ -29,6 +29,7 @@ void twindow_draw(TWindow *win);
 bool twindow_complete_words(TWindow *win);
 void twindow_status_wpm(TWindow *win);
 void twindow_status_time_taken(TWindow *win);
+void twindow_status_words(TWindow *win);
 
 TWindow *twindow_init(Vector2 *screen_size, time_t seed) {
 	TWindow *win = (TWindow *)malloc(sizeof(TWindow));
@@ -174,8 +175,9 @@ void twindow_draw(TWindow *win) {
 	}
 	// Draw the stats.
 	wmove(win->window, 0, 0);
-	twindow_status_wpm(win);
-	twindow_status_time_taken(win);
+	twindow_status_words(win);
+//	twindow_status_wpm(win);
+//	twindow_status_time_taken(win);
 	// Position the cursor.
 	wmove(win->window, win->cursor.y, win->cursor.x);
 	wrefresh(win->window);
@@ -216,6 +218,12 @@ void twindow_status_time_taken(TWindow *win) {
 	}
 	const time_t time_taken = time(NULL) - win->start_time;
 	wprintw(win->window, "%u ", time_taken);
+}
+
+void twindow_status_words(TWindow *win) {
+	const size_t typed_words = node_length(win->i_sen);
+	const size_t total_words = node_length(win->t_sen);
+	wprintw(win->window, "%u/%u ", typed_words > 0 ? typed_words - 1 : 0, total_words);
 }
 
 #endif
