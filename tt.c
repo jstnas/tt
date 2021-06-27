@@ -37,7 +37,7 @@ int main() {
 	init_pair(4, color_accent, color_background);
 	screen_size = (Vector2 *)malloc(sizeof(Vector2));
 	// Create windows.
-	char *menu_options[] = {"Restart", "Repeat", "Exit", NULL};
+	char *menu_options[] = {"Next test", "Repeat test", "Exit", NULL};
 	Vector2 padding = vector2_init(1, 1);
 	Menu *menu = menu_init("Menu", menu_options, padding, screen_size);
 	windows[0] = window_init(menu, m_update, m_draw, m_destroy);
