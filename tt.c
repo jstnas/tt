@@ -4,7 +4,7 @@
 #include "twindow.h"
 #include "window.h"
 
-#define WINDOW_COUNT 2
+#define WINDOW_COUNT 3
 Window *windows[WINDOW_COUNT];
 Vector2 *screen_size;
 size_t target_window = 1;
@@ -37,13 +37,15 @@ int main() {
 	init_pair(4, color_accent, color_background);
 	screen_size = (Vector2 *)malloc(sizeof(Vector2));
 	// Create windows.
-//	char *menu_content[] = {"WPM: 999", "The quick brown fox", NULL};
 	char *menu_options[] = {"Next test", "Repeat test", "Exit", NULL};
-	Vector2 padding = vector2_init(1, 1);
-	Menu *menu = menu_init("Menu", NULL, menu_options, padding, screen_size);
+	Vector2 menu_padding = vector2_init(1, 1);
+	Menu *menu = menu_init("Menu", NULL, menu_options, menu_padding, screen_size);
 	windows[0] = window_init(menu, m_update, m_draw, m_destroy);
 	TWindow *twindow = twindow_init(screen_size, time(NULL));
 	windows[1] = window_init(twindow, t_update, t_draw, t_destroy);
+	char *menu_content[] = {"WPM: 999", NULL};
+	Menu *results_menu = menu_init("Results", menu_content, menu_options, menu_padding, screen_size);
+	windows[2] = window_init(results_menu, m_update, m_draw, m_destroy);
 	// Main loop.
 	while (running) {
 		// Draw.
@@ -113,8 +115,9 @@ void t_update(void *twindow) {
 	int result = twindow_update((TWindow *)twindow);
 	// Completed the test.
 	// TODO: Display stats.
-	if (result == 0)
-		running = 0;
+	if (result == 0) {
+		target_window = 2;
+	}
 	// Escape.
 	else if (result == -2)
 		target_window = 0;
