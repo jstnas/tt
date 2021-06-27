@@ -37,9 +37,10 @@ int main() {
 	init_pair(4, color_accent, color_background);
 	screen_size = (Vector2 *)malloc(sizeof(Vector2));
 	// Create windows.
+//	char *menu_content[] = {"WPM: 999", "The quick brown fox", NULL};
 	char *menu_options[] = {"Next test", "Repeat test", "Exit", NULL};
 	Vector2 padding = vector2_init(1, 1);
-	Menu *menu = menu_init("Menu", menu_options, padding, screen_size);
+	Menu *menu = menu_init("Menu", NULL, menu_options, padding, screen_size);
 	windows[0] = window_init(menu, m_update, m_draw, m_destroy);
 	TWindow *twindow = twindow_init(screen_size, time(NULL));
 	windows[1] = window_init(twindow, t_update, t_draw, t_destroy);

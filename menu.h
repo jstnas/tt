@@ -9,43 +9,54 @@ typedef struct Menu Menu;
 struct Menu {
 	WINDOW *window;
 	char *title;
+	char **content;
 	char **options;
 	Vector2 *screen_size;
 	Vector2 padding;
 	Vector2 size;
+	size_t content_count;
 	size_t option_count;
 	int current_option;
 };
 
-Menu *menu_init(char *title, char *options[], Vector2 padding,
+Menu *menu_init(char *title, char *content[], char *options[], Vector2 padding,
 		Vector2 *screen_size);
 void menu_destroy(Menu *menu);
 int menu_update(Menu *menu);
 void menu_draw(Menu *menu);
 
-Menu *menu_init(char *title, char *options[], Vector2 padding,
+Menu *menu_init(char *title, char *content[], char *options[], Vector2 padding,
 		Vector2 *screen_size) {
 	Menu *menu = (Menu *)malloc(sizeof(Menu));
 	menu->title = title;
+	menu->content = content;
 	menu->options = options;
 	menu->padding = padding;
 	menu->screen_size = screen_size;
-	// Work out the option count.
-	size_t option_count = 0;
-	while (options[option_count] != NULL)
-		option_count++;
-	menu->option_count = option_count;
-	// Work out the size of the menu.
-	// Width is based on the longest option.
+	// Initialise width to the width of the tile.
 	menu->size.x = strlen(title) + (padding.x * 2);
-	// Get the longest option.
-	for (size_t o = 0; o < option_count; o++) {
-		size_t option_length = strlen(options[o]) + (padding.x * 2);
+	// Work out the content count.
+	menu->content_count = 0;
+	if (content != NULL) {
+		while (content[menu->content_count] != NULL) {
+			// Get the longest content.
+			const size_t content_length = strlen(content[menu->content_count])+ (padding.x * 2);
+			if (content_length > menu->size.x)
+				menu->size.x = content_length;
+			menu->content_count++;
+		}
+	}
+	// Work out the option count.
+	menu->option_count = 0;
+	while (options[menu->option_count] != NULL) {
+		// Get the longest option.
+		const size_t option_length = strlen(options[menu->option_count]) + (padding.x * 2);
 		if (option_length > menu->size.x)
 			menu->size.x = option_length;
+		menu->option_count++;
 	}
 	// Height is based on the amount of options.
-	menu->size.y = option_count + (padding.y * 2);
+	menu->size.y = menu->content_count + menu->option_count + (padding.y * 2);
 	// Create the window.
 	menu->window = newwin(0, 0, 0, 0);
 	keypad(menu->window,  TRUE);
@@ -99,17 +110,24 @@ void menu_draw(Menu *menu) {
 	wattron(menu->window, COLOR_PAIR(4));
 	mvwprintw(menu->window, 0, 1, menu->title);
 	wattroff(menu->window, COLOR_PAIR(4));
+	// Draw the content.
+	if (menu->content != NULL) {
+		for (size_t c = 0; c < menu->content_count; c++) {
+			mvwprintw(menu->window, c + menu->padding.y, menu->padding.x,
+					menu->content[c]);
+		}
+	}
 	// Draw the options.
 	for (size_t o = 0; o < menu->option_count; o++) {
+		const int y_pos = menu->padding.y + menu->content_count + o;
+		wmove(menu->window, y_pos, menu->padding.x);
 		if (menu->current_option == o) {
 			wattron(menu->window, A_REVERSE);
-			mvwprintw(menu->window, o + menu->padding.y, menu->padding.x,
-					menu->options[o]);
+			wprintw(menu->window, menu->options[o]);
 			wattroff(menu->window, A_REVERSE);
 		}
 		else
-			mvwprintw(menu->window, o + menu->padding.y, menu->padding.x,
-					menu->options[o]);
+			wprintw(menu->window, menu->options[o]);
 	}
 	wrefresh(menu->window);
 }
