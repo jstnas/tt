@@ -35,6 +35,7 @@ int main() {
 	init_pair(1, color_foreground, color_background);
 	init_pair(2, color_correct, color_background);
 	init_pair(3, color_incorrect, color_background);
+	init_pair(4, color_accent, color_background);
 
 	screen_size = (Vector2 *)malloc(sizeof(Vector2));
 
