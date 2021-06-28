@@ -40,7 +40,7 @@ TWindow *twindow_init(Vector2 *screen_size, time_t seed) {
 	win->cursor = vector2_init(0, 1);
 	// Create the target sentence.
 	srand(seed);
-	win->t_sen = sentence_init_words(50);
+	win->t_sen = sentence_init_words(5);
 	win->i_sen = NULL;
 	return win;
 }

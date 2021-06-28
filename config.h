@@ -19,4 +19,7 @@ static unsigned key_space = 32;
 static unsigned target_width = 80;
 static unsigned target_height = 4;
 
+static unsigned menu_padding_x = 1;
+static unsigned menu_padding_y = 1;
+
 #endif

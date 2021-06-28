@@ -1,3 +1,6 @@
+#ifndef TMENU_H
+#define TMENU_H
+
 #include <stdlib.h>
 #include <string.h>
 #include <ncurses.h>
@@ -5,70 +8,54 @@
 #include "vector2.h"
 #include "tmath.h"
 
-typedef struct Menu Menu;
-struct Menu {
+typedef struct TMenu TMenu;
+struct TMenu {
 	WINDOW *window;
 	char *title;
-	char **content;
 	char **options;
 	Vector2 *screen_size;
 	Vector2 padding;
 	Vector2 size;
-	size_t content_count;
 	size_t option_count;
 	int current_option;
 };
 
-Menu *menu_init(char *title, char *content[], char *options[], Vector2 padding,
-		Vector2 *screen_size);
-void menu_destroy(Menu *menu);
-int menu_update(Menu *menu);
-void menu_draw(Menu *menu);
+TMenu *tmenu_init(char *title, char *options[], Vector2 *screen_size);
+void tmenu_destroy(TMenu *menu);
+int tmenu_update(TMenu *menu);
+void tmenu_draw(TMenu *menu);
 
-Menu *menu_init(char *title, char *content[], char *options[], Vector2 padding,
-		Vector2 *screen_size) {
-	Menu *menu = (Menu *)malloc(sizeof(Menu));
+TMenu *tmenu_init(char *title, char *options[], Vector2 *screen_size) {
+	TMenu *menu = (TMenu *)malloc(sizeof(TMenu));
 	menu->title = title;
-	menu->content = content;
 	menu->options = options;
-	menu->padding = padding;
+	menu->padding = vector2_init(menu_padding_x, menu_padding_y);
 	menu->screen_size = screen_size;
 	// Initialise width to the width of the tile.
-	menu->size.x = strlen(title) + (padding.x * 2);
-	// Work out the content count.
-	menu->content_count = 0;
-	if (content != NULL) {
-		while (content[menu->content_count] != NULL) {
-			// Get the longest content.
-			const size_t content_length = strlen(content[menu->content_count])+ (padding.x * 2);
-			if (content_length > menu->size.x)
-				menu->size.x = content_length;
-			menu->content_count++;
-		}
-	}
+	menu->size.x = strlen(title) + (menu->padding.x * 2);
 	// Work out the option count.
 	menu->option_count = 0;
 	while (options[menu->option_count] != NULL) {
 		// Get the longest option.
-		const size_t option_length = strlen(options[menu->option_count]) + (padding.x * 2);
+		const size_t option_length = strlen(options[menu->option_count]) + (menu->padding.x * 2);
 		if (option_length > menu->size.x)
 			menu->size.x = option_length;
 		menu->option_count++;
 	}
 	// Height is based on the amount of options.
-	menu->size.y = menu->content_count + menu->option_count + (padding.y * 2);
+	menu->size.y = menu->option_count + (menu->padding.y * 2);
 	// Create the window.
 	menu->window = newwin(0, 0, 0, 0);
 	keypad(menu->window,  TRUE);
 	return menu;
 }
 
-void menu_destroy(Menu *menu) {
+void tmenu_destroy(TMenu *menu) {
 	delwin(menu->window);
 	free(menu);
 }
 
-int menu_update(Menu *menu) {
+int tmenu_update(TMenu *menu) {
 	int input = wgetch(menu->window);
 	// Cycle options.
 	if (input == key_up) {
@@ -92,7 +79,7 @@ int menu_update(Menu *menu) {
 	return -1;
 }
 
-void menu_draw(Menu *menu) {
+void tmenu_draw(TMenu *menu) {
 	// Update menu size and position.
 	const Vector2 size = {
 		.x = min(menu->size.x, menu->screen_size->x),
@@ -110,16 +97,9 @@ void menu_draw(Menu *menu) {
 	wattron(menu->window, COLOR_PAIR(4));
 	mvwprintw(menu->window, 0, 1, menu->title);
 	wattroff(menu->window, COLOR_PAIR(4));
-	// Draw the content.
-	if (menu->content != NULL) {
-		for (size_t c = 0; c < menu->content_count; c++) {
-			mvwprintw(menu->window, c + menu->padding.y, menu->padding.x,
-					menu->content[c]);
-		}
-	}
 	// Draw the options.
 	for (size_t o = 0; o < menu->option_count; o++) {
-		const int y_pos = menu->padding.y + menu->content_count + o;
+		const int y_pos = menu->padding.y + o;
 		wmove(menu->window, y_pos, menu->padding.x);
 		if (menu->current_option == o) {
 			wattron(menu->window, A_REVERSE);
@@ -132,3 +112,5 @@ void menu_draw(Menu *menu) {
 	wrefresh(menu->window);
 	curs_set(0);
 }
+
+#endif

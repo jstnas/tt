@@ -38,13 +38,11 @@ int main() {
 	screen_size = (Vector2 *)malloc(sizeof(Vector2));
 	// Create windows.
 	char *menu_options[] = {"Next test", "Repeat test", "Exit", NULL};
-	Vector2 menu_padding = vector2_init(1, 1);
-	Menu *menu = menu_init("Menu", NULL, menu_options, menu_padding, screen_size);
+	TMenu *menu = tmenu_init("Menu", menu_options, screen_size);
 	windows[0] = window_init(menu, m_update, m_draw, m_destroy);
 	TWindow *twindow = twindow_init(screen_size, time(NULL));
 	windows[1] = window_init(twindow, t_update, t_draw, t_destroy);
-	char *menu_content[] = {"WPM: 999", NULL};
-	Menu *results_menu = menu_init("Results", menu_content, menu_options, menu_padding, screen_size);
+	TMenu *results_menu = tmenu_init("Results", menu_options, screen_size);
 	windows[2] = window_init(results_menu, m_update, m_draw, m_destroy);
 	// Main loop.
 	while (running) {
@@ -82,7 +80,7 @@ Vector2 get_window_size(WINDOW *window) {
 
 // Menu window functions.
 void m_update(void *menu) {
-	int result = menu_update((Menu *)menu);
+	int result = tmenu_update((TMenu *)menu);
 	// Restart.
 	if (result == 0) {
 		// Destroy twindow.
@@ -107,8 +105,8 @@ void m_update(void *menu) {
 		target_window = 1;
 }
 
-void m_draw(void *menu) { menu_draw((Menu *)menu); };
-void m_destroy(void *menu) { menu_destroy((Menu *)menu); };
+void m_draw(void *menu) { tmenu_draw((TMenu *)menu); };
+void m_destroy(void *menu) { tmenu_destroy((TMenu *)menu); };
 
 // Typing window functions.
 void t_update(void *twindow) {
