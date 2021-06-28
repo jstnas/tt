@@ -8,12 +8,13 @@
 #include "vector2.h"
 #include "tbackend.h"
 #include "tmath.h"
+#include "tdraw.h"
 
 typedef struct TWindow TWindow;
 struct TWindow {
 	WINDOW *window;
 	Vector2 *screen_size;
-	Vector2 position;
+	Vector2 size;
 	Vector2 cursor;
 	time_t seed;
 	time_t start_time;
@@ -34,6 +35,7 @@ void twindow_status_words(TWindow *win);
 TWindow *twindow_init(Vector2 *screen_size, time_t seed) {
 	TWindow *win = (TWindow *)malloc(sizeof(TWindow));
 	win->screen_size = screen_size;
+	win->size = vector2_init(target_width, target_height);
 	win->seed = seed;
 	win->window = newwin(0, 0, 0, 0);
 	keypad(win->window, TRUE);
@@ -83,17 +85,8 @@ int twindow_update(TWindow *win) {
 }
 
 void twindow_draw(TWindow *win) {
-	const Vector2 size = {
-		.x = min(target_width, win->screen_size->x),
-		.y = min(target_height, win->screen_size->y)
-	};
-	wresize(win->window, size.y, size.x);
-	const Vector2 position = {
-		.x = (win->screen_size->x - size.x) / 2,
-		.y = (win->screen_size->y - size.y) / 2
-	};
-	mvwin(win->window, position.y, position.x);
-	wclear(win->window);
+	tdraw_reposition(win->window, win->screen_size, win->size);
+	Vector2 win_size = get_window_size(win->window);
 	box(win->window, 0, 0);
 	// Draw the sentence.
 	size_t line_length = 0;
@@ -101,7 +94,7 @@ void twindow_draw(TWindow *win) {
 	wmove(win->window, row, 0);
 	Node *t_word = win->t_sen;
 	Node *i_word = win->i_sen;
-	const size_t offset = get_offset(size, t_word, i_word);
+	const size_t offset = get_offset(win_size, t_word, i_word);
 	// Offset the sentence.
 	for (size_t o = 0; o < offset; o++) {
 		node_advance(&t_word);
@@ -143,7 +136,7 @@ void twindow_draw(TWindow *win) {
 			node_advance(&t_char);
 			node_advance(&i_char);
 			// Draw onto the next line.
-			if (line_length == size.x) {
+			if (line_length == win_size.x) {
 				line_length = 0;
 				row++;
 			}
@@ -155,7 +148,7 @@ void twindow_draw(TWindow *win) {
 		if (t_word != NULL || i_word != NULL) {
 			const size_t word_length = get_word_length(node_next(t_word), node_next(i_word));
 			// Add a space if there is enough space for the next word.
-			if (word_length + line_length + 1 < size.x) {
+			if (word_length + line_length + 1 < win_size.x) {
 				waddch(win->window, ' ');
 				line_length++;
 			} else {

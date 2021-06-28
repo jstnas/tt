@@ -3,6 +3,7 @@
 #include "tmenu.h"
 #include "twindow.h"
 #include "window.h"
+#include "tdraw.h"
 
 #define WINDOW_COUNT 3
 Window *windows[WINDOW_COUNT];
@@ -12,7 +13,6 @@ int running = 1;
 
 void draw();
 void destroy_windows();
-Vector2 get_window_size(WINDOW *window);
 
 void m_update(void *menu);
 void m_draw(void *menu);
@@ -70,12 +70,6 @@ void destroy_windows() {
 	for (size_t w = 0; w < WINDOW_COUNT; w++) {
 		windows[w]->destroy(windows[w]);
 	}
-}
-
-Vector2 get_window_size(WINDOW *window) {
-	Vector2 window_size;
-	getmaxyx(window, window_size.y, window_size.x);
-	return window_size;
 }
 
 // Menu window functions.

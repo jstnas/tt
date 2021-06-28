@@ -7,6 +7,7 @@
 #include "config.h"
 #include "vector2.h"
 #include "tmath.h"
+#include "tdraw.h"
 
 typedef struct TMenu TMenu;
 struct TMenu {
@@ -80,17 +81,7 @@ int tmenu_update(TMenu *menu) {
 }
 
 void tmenu_draw(TMenu *menu) {
-	// Update menu size and position.
-	const Vector2 size = {
-		.x = min(menu->size.x, menu->screen_size->x),
-		.y = min(menu->size.y, menu->screen_size->y)
-	};
-	const Vector2 position = {
-		.x = (menu->screen_size->x - size.x) / 2,
-		.y = (menu->screen_size->y - size.y) / 2
-	};
-	wresize(menu->window, size.y, size.x);
-	mvwin(menu->window, position.y, position.x);
+	tdraw_reposition(menu->window, menu->screen_size, menu->size);
 	// Draw a box around the menu.
 	box(menu->window, 0, 0);
 	// Draw the title.
