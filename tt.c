@@ -1,6 +1,6 @@
 #include <time.h>
 #include "config.h"
-#include "menu.h"
+#include "tmenu.h"
 #include "twindow.h"
 #include "window.h"
 
