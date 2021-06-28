@@ -10,13 +10,13 @@ Vector2 get_window_size(WINDOW *window);
 
 void tdraw_reposition(WINDOW *window, Vector2 *screen_size, Vector2 size) {
 	const Vector2 new_size = {
-		.x = min(size.x, screen_size->x),
-		.y = min(size.y, screen_size->y)
+		min(size.x, screen_size->x),
+		min(size.y, screen_size->y)
 	};
 	wresize(window, new_size.y, new_size.x);
 	const Vector2 position = {
-		.x = (screen_size->x - new_size.x) / 2,
-		.y = (screen_size->y - new_size.y) / 2
+		(screen_size->x - new_size.x) / 2,
+		(screen_size->y - new_size.y) / 2
 	};
 	mvwin(window, position.y, position.x);
 	wclear(window);

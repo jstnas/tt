@@ -8,12 +8,14 @@
 #include "vector2.h"
 #include "tmath.h"
 #include "tdraw.h"
+#include "tresult.h"
 
 typedef struct TMenu TMenu;
 struct TMenu {
 	WINDOW *window;
 	char *title;
 	char **options;
+	TResult *result;
 	Vector2 *screen_size;
 	Vector2 padding;
 	Vector2 size;
@@ -22,14 +24,18 @@ struct TMenu {
 };
 
 TMenu *tmenu_init(char *title, char *options[], Vector2 *screen_size);
+TMenu *tmenu_result_init(char *title, char *options[], Vector2 *screen_size, TResult *result);
 void tmenu_destroy(TMenu *menu);
 int tmenu_update(TMenu *menu);
 void tmenu_draw(TMenu *menu);
+void tmenu_draw_options(TMenu *menu, unsigned offset);
+void tmenu_draw_result(TMenu *menu);
 
 TMenu *tmenu_init(char *title, char *options[], Vector2 *screen_size) {
 	TMenu *menu = (TMenu *)malloc(sizeof(TMenu));
 	menu->title = title;
 	menu->options = options;
+	menu->result = NULL;
 	menu->padding = vector2_init(menu_padding_x, menu_padding_y);
 	menu->screen_size = screen_size;
 	// Initialise width to the width of the tile.
@@ -48,6 +54,14 @@ TMenu *tmenu_init(char *title, char *options[], Vector2 *screen_size) {
 	// Create the window.
 	menu->window = newwin(0, 0, 0, 0);
 	keypad(menu->window,  TRUE);
+	return menu;
+}
+
+TMenu *tmenu_result_init(char *title, char *options[], Vector2 *screen_size, TResult *result) {
+	TMenu *menu = tmenu_init(title, options, screen_size);
+	menu->result = result;
+	menu->size.x = max(menu->size.x, 9);
+	menu->size.y += 2;
 	return menu;
 }
 
@@ -89,8 +103,19 @@ void tmenu_draw(TMenu *menu) {
 	mvwprintw(menu->window, 0, 1, menu->title);
 	wattroff(menu->window, COLOR_PAIR(4));
 	// Draw the options.
+	if (menu->result == NULL)
+		tmenu_draw_options(menu, 0);
+	else {
+		tmenu_draw_result(menu);
+		tmenu_draw_options(menu, 2);
+	}
+	wrefresh(menu->window);
+	curs_set(0);
+}
+
+void tmenu_draw_options(TMenu *menu, unsigned offset) {
 	for (size_t o = 0; o < menu->option_count; o++) {
-		const int y_pos = menu->padding.y + o;
+		const int y_pos = menu->padding.y + offset + o;
 		wmove(menu->window, y_pos, menu->padding.x);
 		if (menu->current_option == o) {
 			wattron(menu->window, A_REVERSE);
@@ -100,8 +125,13 @@ void tmenu_draw(TMenu *menu) {
 		else
 			wprintw(menu->window, menu->options[o]);
 	}
-	wrefresh(menu->window);
-	curs_set(0);
+}
+
+void tmenu_draw_result(TMenu *menu) {
+	mvwprintw(menu->window, menu->padding.y, menu->padding.x,
+			"WPM: %3u", menu->result->wpm);
+	mvwprintw(menu->window, menu->padding.y + 1, menu->padding.x,
+			"time: %3u", menu->result->time_taken);
 }
 
 #endif

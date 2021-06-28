@@ -9,6 +9,7 @@
 #include "tbackend.h"
 #include "tmath.h"
 #include "tdraw.h"
+#include "tresult.h"
 
 typedef struct TWindow TWindow;
 struct TWindow {
@@ -18,12 +19,13 @@ struct TWindow {
 	Vector2 cursor;
 	time_t seed;
 	time_t start_time;
+	TResult *result;
 	Node *t_sen;
 	Node *i_sen;
 	Node *mistakes;
 };
 
-TWindow *twindow_init(Vector2 *screen_size, time_t seed);
+TWindow *twindow_init(Vector2 *screen_size, time_t seed, TResult *result);
 void twindow_destroy(TWindow *win);
 int twindow_update(TWindow *win);
 void twindow_draw(TWindow *win);
@@ -32,17 +34,18 @@ void twindow_status_wpm(TWindow *win);
 void twindow_status_time_taken(TWindow *win);
 void twindow_status_words(TWindow *win);
 
-TWindow *twindow_init(Vector2 *screen_size, time_t seed) {
+TWindow *twindow_init(Vector2 *screen_size, time_t seed, TResult *result) {
 	TWindow *win = (TWindow *)malloc(sizeof(TWindow));
 	win->screen_size = screen_size;
 	win->size = vector2_init(target_width, target_height);
 	win->seed = seed;
+	win->result = result;
 	win->window = newwin(0, 0, 0, 0);
 	keypad(win->window, TRUE);
 	win->cursor = vector2_init(0, 1);
 	// Create the target sentence.
 	srand(seed);
-	win->t_sen = sentence_init_words(5);
+	win->t_sen = sentence_init_words(50);
 	win->i_sen = NULL;
 	return win;
 }
@@ -79,8 +82,14 @@ int twindow_update(TWindow *win) {
 	if (win->start_time == 0 && set_start_time)
 		time(&win->start_time);
 	// Check if test is complete.
-	if (twindow_complete_words(win))
+	if (twindow_complete_words(win)) {
+		const time_t time_taken = time(NULL) - win->start_time;
+		const float minutes_taken = time_taken / 60.0;
+		const size_t typed_words = node_length(win->i_sen);
+		const unsigned wpm = typed_words / minutes_taken;
+		*(win->result) = tresult_init(wpm, time_taken);
 		return 0;
+	}
 	return -1;
 }
 
