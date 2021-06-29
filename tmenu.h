@@ -23,13 +23,13 @@ struct TMenu {
 	int current_option;
 };
 
-TMenu *tmenu_init(char *title, char *options[], Vector2 *screen_size);
-TMenu *tmenu_result_init(char *title, char *options[], Vector2 *screen_size, TResult *result);
-void tmenu_destroy(TMenu *menu);
-int tmenu_update(TMenu *menu);
-void tmenu_draw(TMenu *menu);
-void tmenu_draw_options(TMenu *menu, unsigned offset);
-void tmenu_draw_result(TMenu *menu);
+TMenu *tmenu_init(char *, char *[], Vector2 *);
+TMenu *tmenu_result_init(char *, char *[], Vector2 *, TResult *);
+void tmenu_destroy(TMenu *);
+int tmenu_update(TMenu *);
+void tmenu_draw(TMenu *);
+void tmenu_draw_options(TMenu *, unsigned);
+void tmenu_draw_result(TMenu *);
 
 TMenu *tmenu_init(char *title, char *options[], Vector2 *screen_size) {
 	TMenu *menu = (TMenu *)malloc(sizeof(TMenu));
@@ -129,9 +129,9 @@ void tmenu_draw_options(TMenu *menu, unsigned offset) {
 
 void tmenu_draw_result(TMenu *menu) {
 	mvwprintw(menu->window, menu->padding.y, menu->padding.x,
-			"WPM: %3u", menu->result->wpm);
+			"WPM: %3.0f", menu->result->wpm);
 	mvwprintw(menu->window, menu->padding.y + 1, menu->padding.x,
-			"time: %3u", menu->result->time_taken);
+			"time: %3.0f", menu->result->time_taken);
 }
 
 #endif

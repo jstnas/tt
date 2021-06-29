@@ -2,7 +2,6 @@
 #define TWINDOW_H
 
 #include <time.h>
-#include <math.h>
 #include <ncurses.h>
 #include "config.h"
 #include "vector2.h"
@@ -10,6 +9,7 @@
 #include "tmath.h"
 #include "tdraw.h"
 #include "tresult.h"
+#include "ttime.h"
 
 typedef struct TWindow TWindow;
 struct TWindow {
@@ -18,7 +18,8 @@ struct TWindow {
 	Vector2 size;
 	Vector2 cursor;
 	time_t seed;
-	time_t start_time;
+	TTime start_time;
+	bool start_time_set;
 	TResult *result;
 	Node *t_sen;
 	Node *i_sen;
@@ -79,14 +80,15 @@ int twindow_update(TWindow *win) {
 	if (mistake)
 		add_mistake(&win->mistakes);
 	// Set start time on first keypress.
-	if (win->start_time == 0 && set_start_time)
-		time(&win->start_time);
+	if (set_start_time && !win->start_time_set) {
+		get_time(&win->start_time);
+		win->start_time_set = true;
+	}
 	// Check if test is complete.
 	if (twindow_complete_words(win)) {
-		const time_t time_taken = time(NULL) - win->start_time;
-		const float minutes_taken = time_taken / 60.0;
+		const float time_taken = time_diff(&win->start_time);
 		const size_t typed_words = node_length(win->i_sen);
-		const unsigned wpm = typed_words / minutes_taken;
+		const float wpm = get_wpm(typed_words, time_taken);
 		*(win->result) = tresult_init(wpm, time_taken);
 		return 0;
 	}
@@ -204,25 +206,25 @@ bool twindow_complete_words(TWindow *win) {
 }
 
 void twindow_status_wpm(TWindow *win) {
-	if (win->start_time == 0) {
-		wprintw(win->window, "0 ");
+	if (!win->start_time_set) {
+		wprintw(win->window, "  0 ");
 		return;
 	}
 	// TODO: word count should be the amount of words typed correctly.
 	const size_t word_count = node_length(win->i_sen);
-	const float time_taken = (time(NULL) - win->start_time) / 60.0;
-	const unsigned wpm = round(word_count / time_taken);
-	wprintw(win->window, "%u ", wpm);
+	const float time_taken = time_diff(&win->start_time);
+	const float wpm = get_wpm(word_count, time_taken);
+	wprintw(win->window, "%3.0f ", wpm);
 }
 
 void twindow_status_time_taken(TWindow *win) {
 	// Skip if start time hasn't been set.
-	if (win->start_time == 0) {
+	if (!win->start_time_set) {
 		wprintw(win->window, "0 ");
 		return;
 	}
-	const time_t time_taken = time(NULL) - win->start_time;
-	wprintw(win->window, "%u ", time_taken);
+	const float time_taken = time_diff(&win->start_time);
+	wprintw(win->window, "%3.0f ", time_taken);
 }
 
 void twindow_status_words(TWindow *win) {

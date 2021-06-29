@@ -1,18 +1,17 @@
 #ifndef TRESULT_H
 #define TRESULT_H
 
-#include <time.h>
+#include "ttime.h"
 
 typedef struct TResult TResult;
 struct TResult {
-	unsigned wpm;
-	time_t time_taken;
+	float wpm;
+	float time_taken;
 };
 
-TResult tresult_init(unsigned wpm, time_t time_taken);
-char **tresult_content(TResult result);
+TResult tresult_init(float, float);
 
-TResult tresult_init(unsigned wpm, time_t time_taken) {
+TResult tresult_init(float wpm, float time_taken) {
 	TResult result = {wpm, time_taken};
 	return result;
 }
