@@ -178,12 +178,14 @@ void twindow_draw(TWindow *win) {
 		node_advance(&i_word);
 	}
 	// Draw the stats.
-	wmove(win->window, 0, 0);
-	wattron(win->window, COLOR_PAIR(4));
-	twindow_status_words(win);
-//	twindow_status_wpm(win);
-//	twindow_status_time_taken(win);
-	wattroff(win->window, COLOR_PAIR(4));
+	if (win_size.y > 1) {
+		wmove(win->window, 0, 0);
+		wattron(win->window, COLOR_PAIR(4));
+		twindow_status_words(win);
+//		twindow_status_wpm(win);
+//		twindow_status_time_taken(win);
+		wattroff(win->window, COLOR_PAIR(4));
+	}
 	// Position the cursor.
 	wmove(win->window, win->cursor.y, win->cursor.x);
 	wrefresh(win->window);
