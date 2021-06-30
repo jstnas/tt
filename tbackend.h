@@ -11,7 +11,7 @@ static size_t words_count = sizeof(words) / sizeof(*words);
 static char allowed_keys[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 static size_t allowed_key_count = sizeof(allowed_keys) / sizeof(char);
 
-bool is_key_allowed(const char);
+bool is_key_allowed(const int);
 Node *sentence_init_size(const Vector2);
 Node *sentence_init_words(const size_t);
 bool add_input_key(Node **, const int);
@@ -22,7 +22,7 @@ size_t get_word_length(Node *, Node *);
 size_t get_offset(const Vector2, Node *, Node *);
 float get_wpm(const size_t, const float);
 
-bool is_key_allowed(const char key) {
+bool is_key_allowed(const int key) {
 	for (size_t k = 0; k < allowed_key_count; k++) {
 		if (key == allowed_keys[k])
 			return true;

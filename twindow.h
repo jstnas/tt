@@ -78,7 +78,7 @@ int twindow_update(TWindow *win) {
 				mistake = true;
 			break;
 		default:
-			if (is_key_allowed((char)input)) {
+			if (is_key_allowed(input)) {
 				set_start_time = true;
 				if (!add_input_key(&win->i_sen, input))
 					mistake = true;
