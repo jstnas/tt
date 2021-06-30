@@ -60,22 +60,29 @@ int twindow_update(TWindow *win) {
 	const int input = wgetch(win->window);
 	bool mistake = false;
 	bool set_start_time = false;
-	if (input == key_menu)
-		return -2;
-	if (input == key_back) {
-		set_start_time = true;
-		if (!remove_input_key(&win->i_sen))
-			mistake = true;
-	}
-	else if (input == key_space) {
-		set_start_time = true;
-		if (!add_input_word(&win->i_sen))
-			mistake = true;
-	}
-	else if (is_key_allowed((char)input)) {
-		set_start_time = true;
-		if (!add_input_key(&win->i_sen, input))
-			mistake = true;
+	switch (input) {
+		// TODO: only update window size on resize event.
+		case TKEY_RESIZE:
+			return -1;
+			break;
+		case TKEY_MENU:
+			return -2;
+			break;
+		case TKEY_BACK:
+			if (!remove_input_key(&win->i_sen))
+				mistake = true;
+			break;
+		case TKEY_SPACE:
+			set_start_time = true;
+			if (!add_input_word(&win->i_sen))
+				mistake = true;
+			break;
+		default:
+			if (is_key_allowed((char)input)) {
+				set_start_time = true;
+				if (!add_input_key(&win->i_sen, input))
+					mistake = true;
+			}
 	}
 	if (mistake)
 		add_mistake(&win->mistakes);

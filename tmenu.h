@@ -71,26 +71,34 @@ void tmenu_destroy(TMenu *menu) {
 }
 
 int tmenu_update(TMenu *menu) {
-	int input = wgetch(menu->window);
-	// Cycle options.
-	if (input == key_up) {
-		if (menu->current_option == 0)
-			menu->current_option = menu->option_count - 1;
-		else
-			menu->current_option--;
+	const int input = wgetch(menu->window);
+	switch (input) {
+		// TODO: update window size only on resize event.
+		case TKEY_RESIZE:
+			return -1;
+			break;
+		// Go back to typing.
+		case TKEY_MENU:
+			return -2;
+			break;
+		// Return the selected option.
+		case TKEY_SUBMIT:
+			return menu->current_option;
+			break;
+		// Cycle options.
+		case TKEY_UP:
+			if (menu->current_option == 0)
+				menu->current_option = menu->option_count - 1;
+			else
+				menu->current_option--;
+			break;
+		case TKEY_DOWN:
+			if (menu->current_option == menu->option_count - 1)
+				menu->current_option = 0;
+			else
+				menu->current_option++;
+			break;
 	}
-	else if (input == key_down) {
-		if (menu->current_option == menu->option_count - 1)
-			menu->current_option = 0;
-		else
-			menu->current_option++;
-	}
-	// Return the selected option.
-	else if (input == key_submit)
-		return menu->current_option;
-	// Go back to typing.
-	else if (input == key_menu)
-		return -2;
 	return -1;
 }
 
