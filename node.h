@@ -4,19 +4,18 @@
 #include <stdlib.h>
 
 typedef struct Node Node;
-struct Node
-{
+struct Node {
 	Node *next;
 	void *data;
 };
 
-Node *node_tail(Node *head);
-Node *node_next(Node *node);
-void node_push(Node **head, void *data);
-void node_pop(Node **head);
-void node_pop_front(Node **head);
-void node_advance(Node **node);
-size_t node_length(Node *head);
+Node *node_tail(Node *);
+Node *node_next(Node *);
+void node_push(Node **, void *);
+void node_pop(Node **);
+void node_pop_front(Node **);
+void node_advance(Node **);
+size_t node_length(Node *);
 
 
 Node *node_tail(Node *head) {

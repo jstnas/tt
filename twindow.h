@@ -26,14 +26,14 @@ struct TWindow {
 	Node *mistakes;
 };
 
-TWindow *twindow_init(Vector2 *screen_size, time_t seed, TResult *result);
-void twindow_destroy(TWindow *win);
-int twindow_update(TWindow *win);
-void twindow_draw(TWindow *win);
-bool twindow_complete_words(TWindow *win);
-void twindow_status_wpm(TWindow *win);
-void twindow_status_time_taken(TWindow *win);
-void twindow_status_words(TWindow *win);
+TWindow *twindow_init(Vector2 *, time_t, TResult *);
+void twindow_destroy(TWindow *);
+int twindow_update(TWindow *);
+void twindow_draw(TWindow *);
+bool twindow_complete_words(TWindow *);
+void twindow_status_wpm(TWindow *);
+void twindow_status_time_taken(TWindow *);
+void twindow_status_words(TWindow *);
 
 TWindow *twindow_init(Vector2 *screen_size, time_t seed, TResult *result) {
 	TWindow *win = (TWindow *)malloc(sizeof(TWindow));

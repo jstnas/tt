@@ -4,7 +4,6 @@
 #include <stdlib.h>
 
 typedef struct Window Window;
-
 struct Window {
 	void *window;
 	void (*update)(void*);

@@ -5,8 +5,8 @@
 #include "vector2.h"
 #include "tmath.h"
 
-void tdraw_reposition(WINDOW *window, Vector2 *screen_size, Vector2 size);
-Vector2 get_window_size(WINDOW *window);
+void tdraw_reposition(WINDOW *, Vector2 *, Vector2);
+Vector2 get_window_size(WINDOW *);
 
 void tdraw_reposition(WINDOW *window, Vector2 *screen_size, Vector2 size) {
 	const Vector2 new_size = {
