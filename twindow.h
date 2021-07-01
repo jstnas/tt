@@ -40,6 +40,7 @@ float get_wpm(TWindow *);
 TWindow *twindow_init(time_t seed, TResult *result) {
 	TWindow *win = (TWindow *)malloc(sizeof(TWindow));
 	win->window = newwin(0, 0, 0, 0);
+	wbkgd(win->window, COLOR_PAIR(1));
 	win->size = vector2_init(target_width, target_height);
 	win->cursor = vector2_init(0, 1);
 	win->seed = seed;

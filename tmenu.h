@@ -34,6 +34,7 @@ void tmenu_draw_result(TMenu *);
 TMenu *tmenu_init(char *title, char *options[]) {
 	TMenu *menu = (TMenu *)malloc(sizeof(TMenu));
 	menu->window = newwin(0, 0, 0, 0);
+	wbkgd(menu->window, COLOR_PAIR(1));
 	menu->title = title;
 	menu->options = options;
 	menu->resize = true;

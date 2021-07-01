@@ -29,6 +29,7 @@ int main() {
 	init_pair(2, color_correct, color_background);
 	init_pair(3, color_incorrect, color_background);
 	init_pair(4, color_accent, color_background);
+	wbkgd(stdscr, COLOR_PAIR(1));
 	test_result = (TResult *)malloc(sizeof(TResult));
 	*test_result = tresult_init(0, 0);
 	// Create windows.
