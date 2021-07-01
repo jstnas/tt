@@ -19,6 +19,7 @@ struct TWindow {
 	time_t seed;
 	TTime start_time;
 	bool start_time_set;
+	bool resize;
 	TResult *result;
 	Node *t_sen;
 	Node *i_sen;
@@ -43,8 +44,8 @@ TWindow *twindow_init(time_t seed, TResult *result) {
 	win->cursor = vector2_init(0, 1);
 	win->seed = seed;
 	win->start_time_set = false;
+	win->resize = true;
 	win->result = result;
-	tdraw_reposition(win->window, win->size);
 	keypad(win->window, TRUE);
 	// Create the target sentence.
 	srand(seed);
@@ -64,7 +65,7 @@ int twindow_update(TWindow *win) {
 	bool set_start_time = false;
 	switch (input) {
 		case TKEY_RESIZE:
-			tdraw_reposition(win->window, win->size);
+			win->resize = true;
 			return -1;
 		case TKEY_MENU:
 			return -2;
@@ -102,6 +103,10 @@ int twindow_update(TWindow *win) {
 }
 
 void twindow_draw(TWindow *win) {
+	if (win->resize) {
+		win->resize = false;
+		tdraw_reposition(win->window, win->size);
+	}
 	wclear(win->window);
 	Vector2 win_size = get_window_size(win->window);
 	box(win->window, 0, 0);

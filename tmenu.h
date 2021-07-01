@@ -15,6 +15,7 @@ struct TMenu {
 	WINDOW *window;
 	char *title;
 	char **options;
+	bool resize;
 	TResult *result;
 	Vector2 padding;
 	Vector2 size;
@@ -32,8 +33,10 @@ void tmenu_draw_result(TMenu *);
 
 TMenu *tmenu_init(char *title, char *options[]) {
 	TMenu *menu = (TMenu *)malloc(sizeof(TMenu));
+	menu->window = newwin(0, 0, 0, 0);
 	menu->title = title;
 	menu->options = options;
+	menu->resize = true;
 	menu->result = NULL;
 	menu->padding = vector2_init(menu_padding_x, menu_padding_y);
 	// Initialise width to the width of the tile.
@@ -49,9 +52,6 @@ TMenu *tmenu_init(char *title, char *options[]) {
 	}
 	// Height is based on the amount of options.
 	menu->size.y = menu->option_count + (menu->padding.y * 2);
-	// Create the window.
-	menu->window = newwin(0, 0, 0, 0);
-	tdraw_reposition(menu->window, menu->size);
 	keypad(menu->window,  TRUE);
 	return menu;
 }
@@ -61,7 +61,6 @@ TMenu *tmenu_result_init(char *title, char *options[], TResult *result) {
 	menu->result = result;
 	menu->size.x = max(menu->size.x, 9);
 	menu->size.y += 2;
-	tdraw_reposition(menu->window, menu->size);
 	return menu;
 }
 
@@ -74,7 +73,7 @@ int tmenu_update(TMenu *menu) {
 	const int input = wgetch(menu->window);
 	switch (input) {
 		case TKEY_RESIZE:
-			tdraw_reposition(menu->window, menu->size);
+			menu->resize = true;
 			return -1;
 		// Go back to typing.
 		case TKEY_MENU:
@@ -100,6 +99,10 @@ int tmenu_update(TMenu *menu) {
 }
 
 void tmenu_draw(TMenu *menu) {
+	if (menu->resize) {
+		menu->resize = false;
+		tdraw_reposition(menu->window, menu->size);
+	}
 	wclear(menu->window);
 	// Draw a box around the menu.
 	box(menu->window, 0, 0);
