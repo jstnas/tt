@@ -193,9 +193,9 @@ void twindow_draw(TWindow *win) {
 		wmove(win->window, 0, 0);
 		wattron(win->window, COLOR_PAIR(4));
 		twindow_status_words(win);
-//		twindow_status_wpm(win);
-//		twindow_status_time_taken(win);
-		twindow_status_chars(win);
+		twindow_status_wpm(win);
+		twindow_status_time_taken(win);
+//		twindow_status_chars(win);
 		wattroff(win->window, COLOR_PAIR(4));
 	}
 	// Position the cursor.
@@ -220,22 +220,20 @@ bool twindow_complete_words(TWindow *win) {
 }
 
 void twindow_status_wpm(TWindow *win) {
+	float wpm = get_wpm(win);
 	if (!win->start_time_set) {
-		wprintw(win->window, "  0 ");
-		return;
+		wpm = 0;
 	}
 	// TODO: word count should be the amount of words typed correctly.
-	const float wpm = get_wpm(win);
 	wprintw(win->window, "%3.0f ", wpm);
 }
 
 void twindow_status_time_taken(TWindow *win) {
+	float time_taken = time_diff(&win->start_time);
 	// Skip if start time hasn't been set.
 	if (!win->start_time_set) {
-		wprintw(win->window, "0 ");
-		return;
+		time_taken = 0;
 	}
-	const float time_taken = time_diff(&win->start_time);
 	wprintw(win->window, "%3.0f ", time_taken);
 }
 
