@@ -16,28 +16,26 @@ struct TMenu {
 	char *title;
 	char **options;
 	TResult *result;
-	Vector2 *screen_size;
 	Vector2 padding;
 	Vector2 size;
 	size_t option_count;
 	int current_option;
 };
 
-TMenu *tmenu_init(char *, char *[], Vector2 *);
-TMenu *tmenu_result_init(char *, char *[], Vector2 *, TResult *);
+TMenu *tmenu_init(char *, char *[]);
+TMenu *tmenu_result_init(char *, char *[], TResult *);
 void tmenu_destroy(TMenu *);
 int tmenu_update(TMenu *);
 void tmenu_draw(TMenu *);
 void tmenu_draw_options(TMenu *, unsigned);
 void tmenu_draw_result(TMenu *);
 
-TMenu *tmenu_init(char *title, char *options[], Vector2 *screen_size) {
+TMenu *tmenu_init(char *title, char *options[]) {
 	TMenu *menu = (TMenu *)malloc(sizeof(TMenu));
 	menu->title = title;
 	menu->options = options;
 	menu->result = NULL;
 	menu->padding = vector2_init(menu_padding_x, menu_padding_y);
-	menu->screen_size = screen_size;
 	// Initialise width to the width of the tile.
 	menu->size.x = strlen(title) + (menu->padding.x * 2);
 	// Work out the option count.
@@ -53,15 +51,17 @@ TMenu *tmenu_init(char *title, char *options[], Vector2 *screen_size) {
 	menu->size.y = menu->option_count + (menu->padding.y * 2);
 	// Create the window.
 	menu->window = newwin(0, 0, 0, 0);
+	tdraw_reposition(menu->window, menu->size);
 	keypad(menu->window,  TRUE);
 	return menu;
 }
 
-TMenu *tmenu_result_init(char *title, char *options[], Vector2 *screen_size, TResult *result) {
-	TMenu *menu = tmenu_init(title, options, screen_size);
+TMenu *tmenu_result_init(char *title, char *options[], TResult *result) {
+	TMenu *menu = tmenu_init(title, options);
 	menu->result = result;
 	menu->size.x = max(menu->size.x, 9);
 	menu->size.y += 2;
+	tdraw_reposition(menu->window, menu->size);
 	return menu;
 }
 
@@ -73,18 +73,15 @@ void tmenu_destroy(TMenu *menu) {
 int tmenu_update(TMenu *menu) {
 	const int input = wgetch(menu->window);
 	switch (input) {
-		// TODO: update window size only on resize event.
 		case TKEY_RESIZE:
+			tdraw_reposition(menu->window, menu->size);
 			return -1;
-			break;
 		// Go back to typing.
 		case TKEY_MENU:
 			return -2;
-			break;
 		// Return the selected option.
 		case TKEY_SUBMIT:
 			return menu->current_option;
-			break;
 		// Cycle options.
 		case TKEY_UP:
 			if (menu->current_option == 0)
@@ -103,7 +100,7 @@ int tmenu_update(TMenu *menu) {
 }
 
 void tmenu_draw(TMenu *menu) {
-	tdraw_reposition(menu->window, menu->screen_size, menu->size);
+	wclear(menu->window);
 	// Draw a box around the menu.
 	box(menu->window, 0, 0);
 	// Draw the title.

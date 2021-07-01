@@ -9,6 +9,7 @@ int get_time(TTime *);
 float time_diff(TTime *);
 
 int get_time(TTime *time) {
+	// TODO: stop using gettimeofday.
 	return gettimeofday(time, NULL);
 }
 

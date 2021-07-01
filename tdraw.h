@@ -5,21 +5,21 @@
 #include "vector2.h"
 #include "tmath.h"
 
-void tdraw_reposition(WINDOW *, Vector2 *, Vector2);
+void tdraw_reposition(WINDOW *, Vector2);
 Vector2 get_window_size(WINDOW *);
 
-void tdraw_reposition(WINDOW *window, Vector2 *screen_size, Vector2 size) {
+void tdraw_reposition(WINDOW *window, Vector2 size) {
+	const Vector2 screen_size = get_window_size(stdscr);
 	const Vector2 new_size = {
-		min(size.x, screen_size->x),
-		min(size.y, screen_size->y)
+		min(size.x, screen_size.x),
+		min(size.y, screen_size.y)
 	};
 	wresize(window, new_size.y, new_size.x);
 	const Vector2 position = {
-		(screen_size->x - new_size.x) / 2,
-		(screen_size->y - new_size.y) / 2
+		(screen_size.x - new_size.x) / 2,
+		(screen_size.y - new_size.y) / 2
 	};
 	mvwin(window, position.y, position.x);
-	wclear(window);
 }
 
 Vector2 get_window_size(WINDOW *window) {

@@ -8,8 +8,8 @@
 
 #define WINDOW_COUNT 3
 Window *windows[WINDOW_COUNT];
-Vector2 *screen_size;
 TResult *test_result;
+// TODO: resize the window when switching windows.
 size_t target_window = 1;
 int running = 1;
 
@@ -37,21 +37,19 @@ int main() {
 	init_pair(2, color_correct, color_background);
 	init_pair(3, color_incorrect, color_background);
 	init_pair(4, color_accent, color_background);
-	screen_size = (Vector2 *)malloc(sizeof(Vector2));
 	test_result = (TResult *)malloc(sizeof(TResult));
 	*test_result = tresult_init(0, 0);
 	// Create windows.
 	char *menu_options[] = {"Next test", "Repeat test", "Exit", NULL};
-	TMenu *menu = tmenu_init("Menu", menu_options, screen_size);
+	TMenu *menu = tmenu_init("Menu", menu_options);
 	windows[0] = window_init(menu, m_update, m_draw, m_destroy);
-	TWindow *twindow = twindow_init(screen_size, time(NULL), test_result);
+	TWindow *twindow = twindow_init(time(NULL), test_result);
 	windows[1] = window_init(twindow, t_update, t_draw, t_destroy);
-	TMenu *results_menu = tmenu_result_init("Results", menu_options, screen_size, test_result);
+	TMenu *results_menu = tmenu_result_init("Results", menu_options, test_result);
 	windows[2] = window_init(results_menu, m_update, m_draw, m_destroy);
 	// Main loop.
 	while (running) {
 		// Draw.
-		*screen_size = get_window_size(stdscr);
 		draw();
 		// Update.
 		windows[target_window]->update(windows[target_window]->window);
@@ -59,7 +57,6 @@ int main() {
 	// Exit.
 	endwin();
 	destroy_windows();
-	free(screen_size);
 	return 0;
 }
 
@@ -84,14 +81,14 @@ void m_update(void *menu) {
 		// Destroy twindow.
 		windows[1]->destroy(windows[1]);
 		// Create new twindow.
-		TWindow *twindow = twindow_init(screen_size, time(NULL), test_result);
+		TWindow *twindow = twindow_init(time(NULL), test_result);
 		windows[1] = window_init(twindow, t_update, t_draw, t_destroy);
 		target_window = 1;
 	}
 	else if (result == 1) {
 		const size_t seed = ((TWindow *)windows[1]->window)->seed;
 		windows[1]->destroy(windows[1]);
-		TWindow *new_window = twindow_init(screen_size, seed, test_result);
+		TWindow *new_window = twindow_init(seed, test_result);
 		windows[1] = window_init(new_window, t_update, t_draw, t_destroy);
 		target_window = 1;
 	}

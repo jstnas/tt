@@ -14,7 +14,6 @@
 typedef struct TWindow TWindow;
 struct TWindow {
 	WINDOW *window;
-	Vector2 *screen_size;
 	Vector2 size;
 	Vector2 cursor;
 	time_t seed;
@@ -26,7 +25,7 @@ struct TWindow {
 	Node *mistakes;
 };
 
-TWindow *twindow_init(Vector2 *, time_t, TResult *);
+TWindow *twindow_init(time_t, TResult *);
 void twindow_destroy(TWindow *);
 int twindow_update(TWindow *);
 void twindow_draw(TWindow *);
@@ -35,13 +34,13 @@ void twindow_status_wpm(TWindow *);
 void twindow_status_time_taken(TWindow *);
 void twindow_status_words(TWindow *);
 
-TWindow *twindow_init(Vector2 *screen_size, time_t seed, TResult *result) {
+TWindow *twindow_init(time_t seed, TResult *result) {
 	TWindow *win = (TWindow *)malloc(sizeof(TWindow));
-	win->screen_size = screen_size;
 	win->size = vector2_init(target_width, target_height);
 	win->seed = seed;
 	win->result = result;
 	win->window = newwin(0, 0, 0, 0);
+	tdraw_reposition(win->window, win->size);
 	keypad(win->window, TRUE);
 	win->cursor = vector2_init(0, 1);
 	// Create the target sentence.
@@ -61,13 +60,11 @@ int twindow_update(TWindow *win) {
 	bool mistake = false;
 	bool set_start_time = false;
 	switch (input) {
-		// TODO: only update window size on resize event.
 		case TKEY_RESIZE:
+			tdraw_reposition(win->window, win->size);
 			return -1;
-			break;
 		case TKEY_MENU:
 			return -2;
-			break;
 		case TKEY_BACK:
 			if (!remove_input_key(&win->i_sen))
 				mistake = true;
@@ -103,7 +100,7 @@ int twindow_update(TWindow *win) {
 }
 
 void twindow_draw(TWindow *win) {
-	tdraw_reposition(win->window, win->screen_size, win->size);
+	wclear(win->window);
 	Vector2 win_size = get_window_size(win->window);
 	box(win->window, 0, 0);
 	// Draw the sentence.
@@ -175,7 +172,7 @@ void twindow_draw(TWindow *win) {
 				wmove(win->window, row, 0);
 				line_length = 0;
 				// Stop drawing if hit last column.
-				if (row == target_height)
+				if (row == win_size.y)
 					break;
 			}
 			if (i_word != NULL && i_word->next != NULL)
