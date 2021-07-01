@@ -33,6 +33,8 @@ bool twindow_complete_words(TWindow *);
 void twindow_status_wpm(TWindow *);
 void twindow_status_time_taken(TWindow *);
 void twindow_status_words(TWindow *);
+void twindow_status_chars(TWindow *);
+float get_wpm(TWindow *);
 
 TWindow *twindow_init(time_t seed, TResult *result) {
 	TWindow *win = (TWindow *)malloc(sizeof(TWindow));
@@ -91,9 +93,8 @@ int twindow_update(TWindow *win) {
 	}
 	// Check if test is complete.
 	if (twindow_complete_words(win)) {
+		const float wpm = get_wpm(win);
 		const float time_taken = time_diff(&win->start_time);
-		const size_t typed_words = node_length(win->i_sen);
-		const float wpm = get_wpm(typed_words, time_taken);
 		*(win->result) = tresult_init(wpm, time_taken);
 		return 0;
 	}
@@ -189,6 +190,7 @@ void twindow_draw(TWindow *win) {
 		twindow_status_words(win);
 //		twindow_status_wpm(win);
 //		twindow_status_time_taken(win);
+		twindow_status_chars(win);
 		wattroff(win->window, COLOR_PAIR(4));
 	}
 	// Position the cursor.
@@ -218,9 +220,7 @@ void twindow_status_wpm(TWindow *win) {
 		return;
 	}
 	// TODO: word count should be the amount of words typed correctly.
-	const size_t word_count = node_length(win->i_sen);
-	const float time_taken = time_diff(&win->start_time);
-	const float wpm = get_wpm(word_count, time_taken);
+	const float wpm = get_wpm(win);
 	wprintw(win->window, "%3.0f ", wpm);
 }
 
@@ -238,6 +238,17 @@ void twindow_status_words(TWindow *win) {
 	const size_t typed_words = node_length(win->i_sen);
 	const size_t total_words = node_length(win->t_sen);
 	wprintw(win->window, "%u/%u ", typed_words > 0 ? typed_words - 1 : 0, total_words);
+}
+
+void twindow_status_chars(TWindow *win) {
+	const size_t chars = get_typed_chars(win->i_sen);
+	wprintw(win->window, "%u", chars);
+}
+
+float get_wpm(TWindow *win) {
+	const size_t typed_chars = get_typed_chars(win->i_sen);
+	const float time_taken = time_diff(&win->start_time);
+	return typed_chars / 5.0 / (time_taken / 60.0);
 }
 
 #endif

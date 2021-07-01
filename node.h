@@ -14,7 +14,7 @@ Node *node_next(Node *);
 void node_push(Node **, void *);
 void node_pop(Node **);
 void node_pop_front(Node **);
-void node_advance(Node **);
+bool node_advance(Node **);
 size_t node_length(Node *);
 
 
@@ -85,8 +85,13 @@ void node_pop_front(Node **head) {
 	return;
 }
 
-void node_advance(Node **node) {
-	*node = *node == NULL ? NULL : (*node)->next;
+bool node_advance(Node **node) {
+	if (*node == NULL)
+		return false;
+	*node = (*node)->next;
+	if (*node == NULL)
+		return false;
+	return true;
 }
 
 size_t node_length(Node *head) {

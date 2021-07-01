@@ -19,8 +19,8 @@ bool remove_input_key(Node **);
 bool add_input_word(Node **);
 void add_mistake(Node **);
 size_t get_word_length(Node *, Node *);
+size_t get_typed_chars(Node *);
 size_t get_offset(const Vector2, Node *, Node *);
-float get_wpm(const size_t, const float);
 
 bool is_key_allowed(const int key) {
 	for (size_t k = 0; k < allowed_key_count; k++) {
@@ -133,6 +133,16 @@ size_t get_word_length(Node *t_word, Node *i_word) {
 	return length;
 }
 
+size_t get_typed_chars(Node *i_sen) {
+	size_t length = 0;
+	while (i_sen != NULL) {
+		length += node_length(i_sen->data);
+		if (node_advance(&i_sen))
+			length++;
+	}
+	return length;
+}
+
 size_t get_offset(const Vector2 size, Node *t_word, Node *i_word) {
 	size_t offset = 0;
 	// Adds a one line buffer, so you can see the previous line.
@@ -158,10 +168,6 @@ size_t get_offset(const Vector2 size, Node *t_word, Node *i_word) {
 		node_advance(&i_word);
 	}
 	return offset;
-}
-
-float get_wpm(const size_t typed_words, const float time_diff) {
-	return typed_words / (time_diff / 60.0);
 }
 
 #endif
