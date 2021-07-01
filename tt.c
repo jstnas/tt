@@ -75,7 +75,7 @@ void destroy_windows() {
 
 // Menu window functions.
 void m_update(void *menu) {
-	int result = tmenu_update((TMenu *)menu);
+	const int result = tmenu_update((TMenu *)menu);
 	// Restart.
 	if (result == 0) {
 		// Destroy twindow.
@@ -105,7 +105,7 @@ void m_destroy(void *menu) { tmenu_destroy((TMenu *)menu); };
 
 // Typing window functions.
 void t_update(void *twindow) {
-	int result = twindow_update((TWindow *)twindow);
+	const int result = twindow_update((TWindow *)twindow);
 	// Completed the test.
 	if (result == 0)
 		target_window = 2;

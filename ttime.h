@@ -1,22 +1,21 @@
 #ifndef TTIME_H
 #define TTIME_H
 
-#include <sys/time.h>
+#include <time.h>
 
-typedef struct timeval TTime;
+typedef struct timespec TTime;
 
 int get_time(TTime *);
 float time_diff(TTime *);
 
 int get_time(TTime *time) {
-	// TODO: stop using gettimeofday.
-	return gettimeofday(time, NULL);
+	return clock_gettime(CLOCK_MONOTONIC, time);
 }
 
 float time_diff(TTime *start) {
 	TTime now;
 	get_time(&now);
-	return (now.tv_sec - start->tv_sec) + 1e-6 * (now.tv_usec - start->tv_usec);
+	return (now.tv_sec - start->tv_sec) + 1e-9 * (now.tv_nsec - start->tv_nsec);
 }
 
 #endif

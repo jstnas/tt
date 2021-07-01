@@ -36,16 +36,17 @@ void twindow_status_words(TWindow *);
 
 TWindow *twindow_init(time_t seed, TResult *result) {
 	TWindow *win = (TWindow *)malloc(sizeof(TWindow));
-	win->size = vector2_init(target_width, target_height);
-	win->seed = seed;
-	win->result = result;
 	win->window = newwin(0, 0, 0, 0);
+	win->size = vector2_init(target_width, target_height);
+	win->cursor = vector2_init(0, 1);
+	win->seed = seed;
+	win->start_time_set = false;
+	win->result = result;
 	tdraw_reposition(win->window, win->size);
 	keypad(win->window, TRUE);
-	win->cursor = vector2_init(0, 1);
 	// Create the target sentence.
 	srand(seed);
-	win->t_sen = sentence_init_words(50);
+	win->t_sen = sentence_init_words(25);
 	win->i_sen = NULL;
 	return win;
 }
