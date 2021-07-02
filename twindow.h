@@ -40,7 +40,7 @@ TWindow *twindow_init(time_t seed, TResult *result) {
 	TWindow *win = (TWindow *)malloc(sizeof(TWindow));
 	win->window = newwin(0, 0, 0, 0);
 	wbkgd(win->window, COLOR_PAIR(1));
-	win->size = vector2_init(target_width, target_height);
+	win->size = vector2_init(TWINDOW_WIDTH, TWINDOW_HEIGHT);
 	win->cursor = vector2_init(0, 1);
 	win->seed = seed;
 	win->start_time_set = false;

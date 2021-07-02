@@ -18,17 +18,17 @@ void m_update(TMenu *);
 
 int main() {
 	// Init.
-	setenv("ESCDELAY", escape_delay, 0);
+	setenv("ESCDELAY", "0", 0);
 	initscr();
 	start_color();
 	use_default_colors();
 	noecho();
 	raw();
 	cbreak();
-	init_pair(1, color_foreground, color_background);
-	init_pair(2, color_correct, color_background);
-	init_pair(3, color_incorrect, color_background);
-	init_pair(4, color_accent, color_background);
+	init_pair(1, COLOR_SUB, COLOR_BACKGROUND);
+	init_pair(2, COLOR_TEXT, COLOR_BACKGROUND);
+	init_pair(3, COLOR_ERROR, COLOR_BACKGROUND);
+	init_pair(4, COLOR_ACCENT, COLOR_BACKGROUND);
 	wbkgd(stdscr, COLOR_PAIR(1));
 	test_result = (TResult *)malloc(sizeof(TResult));
 	*test_result = tresult_init(0, 0);

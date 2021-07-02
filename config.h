@@ -9,15 +9,13 @@
 #define TKEY_SPACE 32
 #define TKEY_RESIZE 410
 
-static char* escape_delay = "0";
+#define COLOR_BACKGROUND -1
+#define COLOR_SUB 8
+#define COLOR_TEXT 7
+#define COLOR_ERROR 1
+#define COLOR_ACCENT 3
 
-static short color_background = -1;
-static short color_foreground = 8;
-static short color_correct = 7;
-static short color_incorrect = 1;
-static short color_accent = 3;
-
-static unsigned target_width = 80;
-static unsigned target_height = 4;
+#define TWINDOW_WIDTH 80
+#define TWINDOW_HEIGHT 4
 
 #endif
