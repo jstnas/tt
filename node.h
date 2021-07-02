@@ -17,7 +17,6 @@ void node_pop_front(Node **);
 bool node_advance(Node **);
 size_t node_length(Node *);
 
-
 Node *node_tail(Node *head) {
 	if (head == NULL)
 		return NULL;
@@ -48,7 +47,6 @@ void node_push(Node **head, void *data) {
 	last->next = new_node;
 }
 
-// TODO: return data so it can be freed.
 void node_pop(Node **head) {
 	// Done if node is empty.
 	if (*head == NULL)
