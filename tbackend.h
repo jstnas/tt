@@ -32,9 +32,7 @@ bool is_key_allowed(const int key) {
 
 Node *sentence_init_size(const Vector2 size) {
 	Node *sentence = NULL;
-
-	Vector2 position = vector2_init(0, 1);
-
+	Vector2 position = {0, 1};
 	while (true) {
 		const size_t word_index = rand() % words_count;
 		const size_t word_length = strlen(words[word_index]);

@@ -40,8 +40,8 @@ TWindow *twindow_init(time_t seed, TResult *result) {
 	TWindow *win = (TWindow *)malloc(sizeof(TWindow));
 	win->window = newwin(0, 0, 0, 0);
 	wbkgd(win->window, COLOR_PAIR(1));
-	win->size = vector2_init(TWINDOW_WIDTH, TWINDOW_HEIGHT);
-	win->cursor = vector2_init(0, 1);
+	win->size.x = TWINDOW_WIDTH;
+	win->size.y = TWINDOW_HEIGHT;
 	win->seed = seed;
 	win->start_time_set = false;
 	win->resize = true;
@@ -123,7 +123,8 @@ void twindow_draw(TWindow *win) {
 		node_advance(&i_word);
 	}
 	// Reset cursor position.
-	win->cursor = vector2_init(0, 1);
+	win->cursor.x = 0;
+	win->cursor.y = 1;
 	// Continue until the longer sentence is printed.
 	while (t_word != NULL || i_word != NULL) {
 		Node *t_char = t_word == NULL ? NULL : (Node *)t_word->data;
