@@ -10,25 +10,23 @@
 #include "tdraw.h"
 #include "tresult.h"
 
-typedef struct TMenu TMenu;
-struct TMenu {
+typedef struct {
 	WINDOW *window;
 	char *title;
 	char **options;
 	bool resize;
 	TResult *result;
-	Vector2 padding;
 	Vector2 size;
 	size_t option_count;
 	int current_option;
-};
+} TMenu;
 
 TMenu *tmenu_init(char *, char *[]);
 TMenu *tmenu_result_init(char *, char *[], TResult *);
 void tmenu_destroy(TMenu *);
 int tmenu_update(TMenu *);
 void tmenu_draw(TMenu *);
-void tmenu_draw_options(TMenu *, unsigned);
+void tmenu_draw_options(TMenu *, const unsigned);
 void tmenu_draw_result(TMenu *);
 
 TMenu *tmenu_init(char *title, char *options[]) {
@@ -39,20 +37,19 @@ TMenu *tmenu_init(char *title, char *options[]) {
 	menu->options = options;
 	menu->resize = true;
 	menu->result = NULL;
-	menu->padding = vector2_init(menu_padding_x, menu_padding_y);
-	// Initialise width to the width of the tile.
-	menu->size.x = strlen(title) + (menu->padding.x * 2);
-	// Work out the option count.
+	// Initialise menu width to the width of the title.
+	menu->size.x = strlen(title);
+	// Work out the option count and the longest option.
 	menu->option_count = 0;
 	while (options[menu->option_count] != NULL) {
-		// Get the longest option.
-		const size_t option_length = strlen(options[menu->option_count]) + (menu->padding.x * 2);
+		const size_t option_length = strlen(options[menu->option_count]);
 		if (option_length > menu->size.x)
 			menu->size.x = option_length;
 		menu->option_count++;
 	}
+	menu->size.x += 2;
 	// Height is based on the amount of options.
-	menu->size.y = menu->option_count + (menu->padding.y * 2);
+	menu->size.y = menu->option_count + 2;
 	keypad(menu->window,  TRUE);
 	return menu;
 }
@@ -114,20 +111,20 @@ void tmenu_draw(TMenu *menu) {
 	wattron(menu->window, COLOR_PAIR(2));
 	// Draw the options.
 	if (menu->result == NULL)
-		tmenu_draw_options(menu, 0);
+		tmenu_draw_options(menu, 1);
 	else {
 		tmenu_draw_result(menu);
-		tmenu_draw_options(menu, 2);
+		tmenu_draw_options(menu, 3);
 	}
 	wattroff(menu->window, COLOR_PAIR(2));
 	wrefresh(menu->window);
 	curs_set(0);
 }
 
-void tmenu_draw_options(TMenu *menu, unsigned offset) {
+void tmenu_draw_options(TMenu *menu, const unsigned offset) {
 	for (size_t o = 0; o < menu->option_count; o++) {
-		const int y_pos = menu->padding.y + offset + o;
-		wmove(menu->window, y_pos, menu->padding.x);
+		const int y_pos = offset + o;
+		wmove(menu->window, y_pos, 1);
 		if (menu->current_option == o) {
 			wattron(menu->window, A_REVERSE);
 			wprintw(menu->window, menu->options[o]);
@@ -139,9 +136,9 @@ void tmenu_draw_options(TMenu *menu, unsigned offset) {
 }
 
 void tmenu_draw_result(TMenu *menu) {
-	mvwprintw(menu->window, menu->padding.y, menu->padding.x,
+	mvwprintw(menu->window, 1, 1,
 			"WPM: %3.0f", menu->result->wpm);
-	mvwprintw(menu->window, menu->padding.y + 1, menu->padding.x,
+	mvwprintw(menu->window, 2, 1,
 			"time: %3.0f", menu->result->time_taken);
 }
 
