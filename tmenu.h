@@ -111,6 +111,7 @@ void tmenu_draw(TMenu *menu) {
 	wattron(menu->window, COLOR_PAIR(4));
 	mvwprintw(menu->window, 0, 1, menu->title);
 	wattroff(menu->window, COLOR_PAIR(4));
+	wattron(menu->window, COLOR_PAIR(2));
 	// Draw the options.
 	if (menu->result == NULL)
 		tmenu_draw_options(menu, 0);
@@ -118,6 +119,7 @@ void tmenu_draw(TMenu *menu) {
 		tmenu_draw_result(menu);
 		tmenu_draw_options(menu, 2);
 	}
+	wattroff(menu->window, COLOR_PAIR(2));
 	wrefresh(menu->window);
 	curs_set(0);
 }
