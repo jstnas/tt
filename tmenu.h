@@ -6,7 +6,6 @@
 #include <ncurses.h>
 #include "config.h"
 #include "vector2.h"
-#include "tmath.h"
 #include "tdraw.h"
 #include "tresult.h"
 
@@ -57,7 +56,8 @@ TMenu *tmenu_init(char *title, char *options[]) {
 TMenu *tmenu_result_init(char *title, char *options[], TResult *result) {
 	TMenu *menu = tmenu_init(title, options);
 	menu->result = result;
-	menu->size.x = max(menu->size.x, 9);
+	if (menu->size.x < 9)
+		menu->size.x = 9;
 	menu->size.y += 2;
 	return menu;
 }

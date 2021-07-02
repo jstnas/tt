@@ -6,7 +6,6 @@
 #include "config.h"
 #include "vector2.h"
 #include "tbackend.h"
-#include "tmath.h"
 #include "tdraw.h"
 #include "tresult.h"
 #include "ttime.h"

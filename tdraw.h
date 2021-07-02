@@ -1,9 +1,10 @@
 #ifndef TDRAW_H
 #define TDRAW_H
 
+#define MIN(a, b)		((a) < (b) ? (a) : (b))
+
 #include <ncurses.h>
 #include "vector2.h"
-#include "tmath.h"
 
 void tdraw_reposition(WINDOW *, Vector2);
 Vector2 get_window_size(WINDOW *);
@@ -11,8 +12,8 @@ Vector2 get_window_size(WINDOW *);
 void tdraw_reposition(WINDOW *window, Vector2 size) {
 	const Vector2 screen_size = get_window_size(stdscr);
 	const Vector2 new_size = {
-		min(size.x, screen_size.x),
-		min(size.y, screen_size.y)
+		MIN(size.x, screen_size.x),
+		MIN(size.y, screen_size.y)
 	};
 	wresize(window, new_size.y, new_size.x);
 	const Vector2 position = {
