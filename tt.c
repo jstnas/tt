@@ -1,7 +1,7 @@
 #include <time.h>
 #include "config.h"
 #include "tmenu.h"
-#include "twindow.h"
+#include "ttest.h"
 #include "tdraw.h"
 #include "tresult.h"
 
@@ -10,7 +10,7 @@ static TResult *test_result;
 static size_t current_window = 0;
 static bool running = true;
 // Windows.
-static TWindow *test_window;
+static TTest *test_window;
 static TMenu *main_menu;
 static TMenu *results_menu;
 
@@ -34,7 +34,7 @@ int main() {
 	*test_result = tresult_init(0, 0);
 	// Create windows.
 	char *menu_options[] = {"Next test", "Repeat test", "Exit", NULL};
-	test_window = twindow_init(time(NULL), test_result);
+	test_window = ttest_init(time(NULL), test_result);
 	main_menu = tmenu_init("Menu", menu_options);
 	results_menu = tmenu_result_init("Results", menu_options, test_result);
 	// Main loop.
@@ -47,8 +47,8 @@ int main() {
 		switch (current_window) {
 			// Test window.
 			case 0:
-				twindow_draw(test_window);
-				const int result = twindow_update(test_window);
+				ttest_draw(test_window);
+				const int result = ttest_update(test_window);
 				switch (result) {
 					// Completed the test.
 					case 0:
@@ -74,7 +74,7 @@ int main() {
 	}
 	// Cleanup.
 	endwin();
-	twindow_destroy(test_window);
+	ttest_destroy(test_window);
 	tmenu_destroy(main_menu);
 	tmenu_destroy(results_menu);
 	return 0;
@@ -86,15 +86,15 @@ void m_update(TMenu *menu) {
 	switch (result) {
 		// Next test.
 		case 0:
-			twindow_destroy(test_window);
-			test_window = twindow_init(time(NULL), test_result);
+			ttest_destroy(test_window);
+			test_window = ttest_init(time(NULL), test_result);
 			current_window = 0;
 			break;
 		// Repeat test.
 		case 1:
 			const size_t seed = test_window->seed;
-			twindow_destroy(test_window);
-			test_window = twindow_init(seed, test_result);
+			ttest_destroy(test_window);
+			test_window = ttest_init(seed, test_result);
 			current_window = 0;
 			break;
 		// Exit.
