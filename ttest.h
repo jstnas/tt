@@ -93,9 +93,8 @@ int ttest_update(TTest *test) {
 	}
 	// Check if test is complete.
 	if (ttest_complete_words(test)) {
-		const float wpm = get_wpm(test);
-		const float time_taken = time_diff(&test->start_time);
-		*(test->result) = tresult_init(wpm, time_taken);
+		test->result->wpm = get_wpm(test);
+		test->result->time_taken = time_diff(&test->start_time);
 		return 0;
 	}
 	return -1;

@@ -31,7 +31,8 @@ int main() {
 	init_pair(4, COLOR_ACCENT, COLOR_BACKGROUND);
 	wbkgd(stdscr, COLOR_PAIR(1));
 	test_result = (TResult *)malloc(sizeof(TResult));
-	*test_result = tresult_init(0, 0);
+	test_result->wpm = 0;
+	test_result->time_taken = 0;
 	// Create windows.
 	char *menu_options[] = {"Next test", "Repeat test", "Exit", NULL};
 	test_window = ttest_init(time(NULL), test_result);
