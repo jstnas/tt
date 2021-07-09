@@ -7,10 +7,11 @@
 #include "vector2.h"
 
 void tdraw_reposition(WINDOW *, Vector2);
-Vector2 get_window_size(WINDOW *);
+void get_window_size(Vector2 *, WINDOW *);
 
 void tdraw_reposition(WINDOW *window, Vector2 size) {
-	const Vector2 screen_size = get_window_size(stdscr);
+	Vector2 screen_size;
+	get_window_size(&screen_size, window);
 	const Vector2 new_size = {
 		MIN(size.x, screen_size.x),
 		MIN(size.y, screen_size.y)
@@ -23,10 +24,8 @@ void tdraw_reposition(WINDOW *window, Vector2 size) {
 	mvwin(window, position.y, position.x);
 }
 
-Vector2 get_window_size(WINDOW *window) {
-	Vector2 window_size;
-	getmaxyx(window, window_size.y, window_size.x);
-	return window_size;
+void get_window_size(Vector2 *size, WINDOW *window) {
+	getmaxyx(window, size->y, size->x);
 }
 
 #endif

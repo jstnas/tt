@@ -106,7 +106,8 @@ void ttest_draw(TTest *test) {
 		tdraw_reposition(test->window, test->size);
 	}
 	wclear(test->window);
-	Vector2 win_size = get_window_size(test->window);
+	Vector2 win_size;
+	get_window_size(&win_size, test->window);
 	box(test->window, 0, 0);
 	// Draw the sentence.
 	size_t line_length = 0;
