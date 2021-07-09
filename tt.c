@@ -5,15 +5,16 @@
 #include "tdraw.h"
 #include "tresult.h"
 
-static TResult *test_result;
+TResult *test_result;
 // TODO: resize the window when switching windows.
-static size_t current_window = 0;
-static bool running = true;
+size_t current_window = 0;
+bool running = true;
 // Windows.
-static TTest *test_window;
-static TMenu *main_menu;
-static TMenu *results_menu;
+TTest *test_window;
+TMenu *main_menu;
+TMenu *results_menu;
 
+void t_update(TTest *);
 void m_update(TMenu *);
 
 int main() {
@@ -49,17 +50,7 @@ int main() {
 			// Test window.
 			case 0:
 				ttest_draw(test_window);
-				const int result = ttest_update(test_window);
-				switch (result) {
-					// Completed the test.
-					case 0:
-						current_window = 2;
-						break;
-					// Escape key pressed.
-					case -2:
-						current_window = 1;
-						break;
-				}
+				t_update(test_window);
 				break;
 			// Main menu.
 			case 1:
@@ -79,6 +70,20 @@ int main() {
 	tmenu_destroy(main_menu);
 	tmenu_destroy(results_menu);
 	return 0;
+}
+
+void t_update(TTest *test) {
+	const int result = ttest_update(test);
+	switch (result) {
+		// Completed the test.
+		case 0:
+			current_window = 2;
+			break;
+		// Escape key pressed.
+		case -2:
+			current_window = 1;
+			break;
+	}
 }
 
 // Menu window functions.
