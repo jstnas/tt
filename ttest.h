@@ -95,6 +95,7 @@ int ttest_update(TTest *test) {
 	if (ttest_complete_words(test)) {
 		test->result->wpm = get_wpm(test);
 		test->result->time_taken = time_diff(&test->start_time);
+		// TODO: save results to a file.
 		return 0;
 	}
 	return -1;
