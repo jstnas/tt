@@ -6,18 +6,17 @@
 #include "config.h"
 #include "vector2.h"
 #include "tbackend.h"
-#include "tdraw.h"
 #include "tresult.h"
 #include "ttime.h"
+#include "twindow.h"
 
 typedef struct {
-	WINDOW *window;
-	Vector2 size;
 	Vector2 cursor;
 	time_t seed;
 	TTime start_time;
 	bool start_time_set;
-	bool resize;
+	TWindow *twin;
+	WINDOW *window;
 	TResult *result;
 	Node *t_sen;
 	Node *i_sen;
@@ -37,13 +36,11 @@ float get_wpm(TTest *);
 
 TTest *ttest_init(time_t seed, TResult *result) {
 	TTest *test = (TTest *)malloc(sizeof(TTest));
-	test->window = newwin(0, 0, 0, 0);
-	wbkgd(test->window, COLOR_PAIR(1));
-	test->size.x = TWINDOW_WIDTH;
-	test->size.y = TWINDOW_HEIGHT;
+	const Vector2 size = {TWINDOW_WIDTH, TWINDOW_HEIGHT};
+	test->twin = twindow_init(size);
+	test->window = test->twin->window;
 	test->seed = seed;
 	test->start_time_set = false;
-	test->resize = true;
 	test->result = result;
 	keypad(test->window, TRUE);
 	// Create the target sentence.
@@ -64,7 +61,7 @@ int ttest_update(TTest *test) {
 	bool set_start_time = false;
 	switch (input) {
 		case TKEY_RESIZE:
-			test->resize = true;
+			test->twin->resize = true;
 			return -1;
 		case TKEY_MENU:
 			return -2;
@@ -102,10 +99,7 @@ int ttest_update(TTest *test) {
 }
 
 void ttest_draw(TTest *test) {
-	if (test->resize) {
-		test->resize = false;
-		tdraw_reposition(test->window, test->size);
-	}
+	twindow_resize(test->twin);
 	wclear(test->window);
 	Vector2 win_size;
 	get_window_size(&win_size, test->window);

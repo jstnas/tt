@@ -2,7 +2,6 @@
 #include "config.h"
 #include "tmenu.h"
 #include "ttest.h"
-#include "tdraw.h"
 #include "tresult.h"
 
 TResult *test_result;
@@ -38,7 +37,7 @@ int main() {
 	char *menu_options[] = {"Next test", "Repeat test", "Exit", NULL};
 	test_window = ttest_init(time(NULL), test_result);
 	main_menu = tmenu_init("Menu", menu_options);
-	results_menu = tmenu_result_init("Results", menu_options, test_result);
+//	results_menu = tmenu_result_init("Results", menu_options, test_result);
 	// Main loop.
 	while (running) {
 		// Draw.
@@ -55,6 +54,7 @@ int main() {
 			// Main menu.
 			case 1:
 				tmenu_draw(main_menu);
+				tmenu_draw_options(main_menu, 1);
 				m_update(main_menu);
 				break;
 			// Results menu.
