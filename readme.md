@@ -6,7 +6,7 @@ tt - touch typing test for the terminal
 Requirements
 ------------
 * C
-* Curses
+* Ncurses
 
 Scrot
 -----
