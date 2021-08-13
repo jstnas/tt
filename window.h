@@ -27,7 +27,7 @@ window_init(Window **win, unsigned width, unsigned height) {
 	*win = (Window *)malloc(sizeof(Window));
 	// Create and setup the window.
 	(*win)->window = newwin(0, 0, 0, 0);
-	wbkgd((*win)->window, COLOR_PAIR(1));
+	wbkgd((*win)->window, COLOR_PAIR(PAIR_SUB));
 	// Assign the rest.
 	(*win)->width = width;
 	(*win)->height = height;

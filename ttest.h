@@ -51,7 +51,7 @@ test_init(Test **test, time_t seed, TResult *result) {
 }
 
 void test_free(Test *test) {
-	delwin(test->window);
+	window_free(test->win);
 	free(test);
 }
 
@@ -60,7 +60,7 @@ int test_update(Test *test) {
 	bool mistake = false;
 	bool set_start_time = false;
 	switch (input) {
-		case TKEY_RESIZE:
+		case KEY_RESIZE:
 			test->win->resize = true;
 			return -1;
 		case TKEY_MENU:
@@ -129,16 +129,16 @@ void test_draw(Test *test) {
 			const char character = t_char == NULL ? *(char *)i_char->data :
 				*(char *)t_char->data;
 			// Choose the color pair.
-			short pair = 3;
+			short pair = PAIR_ERROR;
 			// Normal if haven't reached this point.
 			if (i_char == NULL && i_word != NULL && i_word->next == NULL)
-				pair = 1;
+				pair = PAIR_SUB;
 			else if (i_word == NULL)
-				pair = 1;
+				pair = PAIR_SUB;
 			// Correct if characters match.
 			else if (t_char != NULL && i_char != NULL &&
 					*(char *)t_char->data == *(char *)i_char->data) {
-				pair = 2;
+				pair = PAIR_TEXT;
 				getyx(test->window, test->cursor.y, test->cursor.x);
 				test->cursor.x++;
 			}
@@ -186,12 +186,12 @@ void test_draw(Test *test) {
 	// Draw the stats.
 	if (win_size.y > 1) {
 		wmove(test->window, 0, 0);
-		wattron(test->window, COLOR_PAIR(4));
+		wattron(test->window, COLOR_PAIR(PAIR_ACCENT));
 		test_status_words(test);
 		test_status_wpm(test);
 		test_status_time_taken(test);
 //		test_status_chars(test);
-		wattroff(test->window, COLOR_PAIR(4));
+		wattroff(test->window, COLOR_PAIR(PAIR_ACCENT));
 	}
 	// Position the cursor.
 	wmove(test->window, test->cursor.y, test->cursor.x);

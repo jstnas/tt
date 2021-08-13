@@ -63,7 +63,7 @@ menu_update(Menu *menu) {
 			menu->win->resize = true;
 			return -1;
 		// Go back to typing.
-		case KEY_BTAB:
+		case TKEY_MENU:
 			return -2;
 		// Return the selected option.
 		case TKEY_SUBMIT:
@@ -71,13 +71,13 @@ menu_update(Menu *menu) {
 			menu->current_option = 0;
 			return result;
 		// Cycle options.
-		case KEY_UP:
+		case TKEY_UP:
 			if (menu->current_option == 0)
 				menu->current_option = menu->option_count - 1;
 			else
 				menu->current_option--;
 			break;
-		case KEY_DOWN:
+		case TKEY_DOWN:
 			if (menu->current_option == menu->option_count - 1)
 				menu->current_option = 0;
 			else
@@ -94,13 +94,16 @@ menu_draw(Menu *menu) {
 	// Draw a box around the menu.
 	box(menu->window, 0, 0);
 	// Draw the title.
+	wattron(menu->window, COLOR_PAIR(PAIR_ACCENT));
 	mvwprintw(menu->window, 0, 1, menu->title);
+	wattroff(menu->window, COLOR_PAIR(PAIR_ACCENT));
 	// Refresh the screen.
 	wrefresh(menu->window);
 	curs_set(0);
 }
 
 void menu_draw_options(Menu *menu, unsigned offset) {
+	wattron(menu->window, COLOR_PAIR(PAIR_TEXT));
 	for (size_t o = 0; o < menu->option_count; o++) {
 		wmove(menu->window, o + offset, 1);
 		if (menu->current_option == o) {
@@ -111,6 +114,7 @@ void menu_draw_options(Menu *menu, unsigned offset) {
 		else
 			wprintw(menu->window, menu->options[o]);
 	}
+	wattroff(menu->window, COLOR_PAIR(PAIR_TEXT));
 }
 
 #endif
