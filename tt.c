@@ -1,6 +1,6 @@
 #include <time.h>
 #include "config.h"
-#include "tmenu.h"
+#include "menu.h"
 #include "ttest.h"
 #include "tresult.h"
 
@@ -9,12 +9,12 @@ TResult *test_result;
 size_t current_window = 0;
 bool running = true;
 // Windows.
-TTest *test_window;
-TMenu *main_menu;
-TMenu *results_menu;
+Test *test_window;
+Menu *main_menu;
+Menu *results_menu;
 
-void t_update(TTest *);
-void m_update(TMenu *);
+void t_update(Test *);
+void m_update(Menu *);
 
 int main() {
 	// Init.
@@ -35,9 +35,9 @@ int main() {
 	test_result->time_taken = 0;
 	// Create windows.
 	char *menu_options[] = {"Next test", "Repeat test", "Exit", NULL};
-	test_window = ttest_init(time(NULL), test_result);
-	main_menu = tmenu_init("Menu", menu_options);
-//	results_menu = tmenu_result_init("Results", menu_options, test_result);
+	test_init(&test_window, time(NULL), test_result);
+	menu_init(&main_menu, "Menu", menu_options);
+//	results_menu = menu_result_init("Results", menu_options, test_result);
 	// Main loop.
 	while (running) {
 		// Draw.
@@ -48,32 +48,32 @@ int main() {
 		switch (current_window) {
 			// Test window.
 			case 0:
-				ttest_draw(test_window);
+				test_draw(test_window);
 				t_update(test_window);
 				break;
 			// Main menu.
 			case 1:
-				tmenu_draw(main_menu);
-				tmenu_draw_options(main_menu, 1);
+				menu_draw(main_menu);
+				menu_draw_options(main_menu, 1);
 				m_update(main_menu);
 				break;
 			// Results menu.
 			case 2:
-				tmenu_draw(results_menu);
+				menu_draw(results_menu);
 				m_update(results_menu);
 				break;
 		}
 	}
 	// Cleanup.
 	endwin();
-	ttest_destroy(test_window);
-	tmenu_destroy(main_menu);
-	tmenu_destroy(results_menu);
+	test_free(test_window);
+	menu_free(main_menu);
+	menu_free(results_menu);
 	return 0;
 }
 
-void t_update(TTest *test) {
-	const int result = ttest_update(test);
+void t_update(Test *test) {
+	const int result = test_update(test);
 	switch (result) {
 		// Completed the test.
 		case 0:
@@ -87,20 +87,20 @@ void t_update(TTest *test) {
 }
 
 // Menu window functions.
-void m_update(TMenu *menu) {
-	const int result = tmenu_update(menu);
+void m_update(Menu *menu) {
+	const int result = menu_update(menu);
 	switch (result) {
 		// Next test.
 		case 0:
-			ttest_destroy(test_window);
-			test_window = ttest_init(time(NULL), test_result);
+			test_free(test_window);
+			test_init(&test_window, time(NULL), test_result);
 			current_window = 0;
 			break;
 		// Repeat test.
 		case 1:
 			const size_t seed = test_window->seed;
-			ttest_destroy(test_window);
-			test_window = ttest_init(seed, test_result);
+			test_free(test_window);
+			test_init(&test_window, time(NULL), test_result);
 			current_window = 0;
 			break;
 		// Exit.

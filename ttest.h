@@ -1,5 +1,5 @@
-#ifndef TTEST_H
-#define TTEST_H
+#ifndef TEST_H
+#define TEST_H
 
 #include <time.h>
 #include <ncurses.h>
@@ -8,60 +8,60 @@
 #include "tbackend.h"
 #include "tresult.h"
 #include "ttime.h"
-#include "twindow.h"
+#include "window.h"
 
 typedef struct {
 	Vector2 cursor;
 	time_t seed;
 	TTime start_time;
 	bool start_time_set;
-	TWindow *twin;
+	Window *win;
 	WINDOW *window;
 	TResult *result;
 	Node *t_sen;
 	Node *i_sen;
 	Node *mistakes;
-} TTest;
+} Test;
 
-TTest *ttest_init(time_t, TResult *);
-void ttest_destroy(TTest *);
-int ttest_update(TTest *);
-void ttest_draw(TTest *);
-bool ttest_complete_words(TTest *);
-void ttest_status_wpm(TTest *);
-void ttest_status_time_taken(TTest *);
-void ttest_status_words(TTest *);
-void ttest_status_chars(TTest *);
-float get_wpm(TTest *);
+void test_init(Test **, time_t, TResult *);
+void test_free(Test *);
+int test_update(Test *);
+void test_draw(Test *);
+bool test_complete_words(Test *);
+void test_status_wpm(Test *);
+void test_status_time_taken(Test *);
+void test_status_words(Test *);
+void test_status_chars(Test *);
+float get_wpm(Test *);
 
-TTest *ttest_init(time_t seed, TResult *result) {
-	TTest *test = (TTest *)malloc(sizeof(TTest));
+void
+test_init(Test **test, time_t seed, TResult *result) {
+	*test = (Test *)malloc(sizeof(Test));
 	const Vector2 size = {TWINDOW_WIDTH, TWINDOW_HEIGHT};
-	test->twin = twindow_init(size);
-	test->window = test->twin->window;
-	test->seed = seed;
-	test->start_time_set = false;
-	test->result = result;
-	keypad(test->window, TRUE);
+	window_init(&(*test)->win, size.x, size.y);
+	(*test)->window = (*test)->win->window;
+	(*test)->seed = seed;
+	(*test)->start_time_set = false;
+	(*test)->result = result;
+	keypad((*test)->window, TRUE);
 	// Create the target sentence.
 	srand(seed);
-	test->t_sen = sentence_init_words(25);
-	test->i_sen = NULL;
-	return test;
+	(*test)->t_sen = sentence_init_words(25);
+	(*test)->i_sen = NULL;
 }
 
-void ttest_destroy(TTest *test) {
+void test_free(Test *test) {
 	delwin(test->window);
 	free(test);
 }
 
-int ttest_update(TTest *test) {
+int test_update(Test *test) {
 	const int input = wgetch(test->window);
 	bool mistake = false;
 	bool set_start_time = false;
 	switch (input) {
 		case TKEY_RESIZE:
-			test->twin->resize = true;
+			test->win->resize = true;
 			return -1;
 		case TKEY_MENU:
 			return -2;
@@ -89,7 +89,7 @@ int ttest_update(TTest *test) {
 		test->start_time_set = true;
 	}
 	// Check if test is complete.
-	if (ttest_complete_words(test)) {
+	if (test_complete_words(test)) {
 		test->result->wpm = get_wpm(test);
 		test->result->time_taken = time_diff(&test->start_time);
 		// TODO: save results to a file.
@@ -98,11 +98,11 @@ int ttest_update(TTest *test) {
 	return -1;
 }
 
-void ttest_draw(TTest *test) {
-	twindow_resize(test->twin);
+void test_draw(Test *test) {
+	window_resize(test->win);
 	wclear(test->window);
 	Vector2 win_size;
-	get_window_size(&win_size, test->window);
+	getmaxyx(test->window, win_size.y, win_size.x);
 	box(test->window, 0, 0);
 	// Draw the sentence.
 	size_t line_length = 0;
@@ -187,10 +187,10 @@ void ttest_draw(TTest *test) {
 	if (win_size.y > 1) {
 		wmove(test->window, 0, 0);
 		wattron(test->window, COLOR_PAIR(4));
-		ttest_status_words(test);
-		ttest_status_wpm(test);
-		ttest_status_time_taken(test);
-//		ttest_status_chars(test);
+		test_status_words(test);
+		test_status_wpm(test);
+		test_status_time_taken(test);
+//		test_status_chars(test);
 		wattroff(test->window, COLOR_PAIR(4));
 	}
 	// Position the cursor.
@@ -200,7 +200,7 @@ void ttest_draw(TTest *test) {
 }
 
 // Complete function for words mode.
-bool ttest_complete_words(TTest *test) {
+bool test_complete_words(Test *test) {
 	const size_t i_sen_length = node_length(test->i_sen);
 	const size_t t_sen_length = node_length(test->t_sen);
 	if (i_sen_length > t_sen_length)
@@ -214,7 +214,7 @@ bool ttest_complete_words(TTest *test) {
 	return false;
 }
 
-void ttest_status_wpm(TTest *test) {
+void test_status_wpm(Test *test) {
 	float wpm = get_wpm(test);
 	if (!test->start_time_set) {
 		wpm = 0;
@@ -223,7 +223,7 @@ void ttest_status_wpm(TTest *test) {
 	wprintw(test->window, "%3.0f ", wpm);
 }
 
-void ttest_status_time_taken(TTest *test) {
+void test_status_time_taken(Test *test) {
 	float time_taken = time_diff(&test->start_time);
 	// Skip if start time hasn't been set.
 	if (!test->start_time_set) {
@@ -232,18 +232,18 @@ void ttest_status_time_taken(TTest *test) {
 	wprintw(test->window, "%3.0f ", time_taken);
 }
 
-void ttest_status_words(TTest *test) {
+void test_status_words(Test *test) {
 	const size_t typed_words = node_length(test->i_sen);
 	const size_t total_words = node_length(test->t_sen);
 	wprintw(test->window, "%u/%u ", typed_words > 0 ? typed_words - 1 : 0, total_words);
 }
 
-void ttest_status_chars(TTest *test) {
+void test_status_chars(Test *test) {
 	const size_t chars = get_typed_chars(test->i_sen);
 	wprintw(test->window, "%u", chars);
 }
 
-float get_wpm(TTest *test) {
+float get_wpm(Test *test) {
 	const size_t typed_chars = get_typed_chars(test->i_sen);
 	const float time_taken = time_diff(&test->start_time);
 	return typed_chars / 5.0 / (time_taken / 60.0);
