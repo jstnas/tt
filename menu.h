@@ -102,7 +102,8 @@ menu_draw(Menu *menu) {
 	curs_set(0);
 }
 
-void menu_draw_options(Menu *menu, unsigned offset) {
+void
+menu_draw_options(Menu *menu, unsigned offset) {
 	wattron(menu->window, COLOR_PAIR(PAIR_TEXT));
 	for (size_t o = 0; o < menu->option_count; o++) {
 		wmove(menu->window, o + offset, 1);

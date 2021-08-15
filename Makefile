@@ -4,4 +4,4 @@ CFLAGS += -lncurses -lm -Wall
 INCS = $(wildcard *.h)
 
 $(TARGET): $(TARGET).c $(INCS)
-	$(CC) -o $(TARGET) tt.c $(CFLAGS)
+	$(CC) -o $(TARGET) $(TARGET).c $(CFLAGS)

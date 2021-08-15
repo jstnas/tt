@@ -17,7 +17,8 @@ void node_pop_front(Node **);
 bool node_advance(Node **);
 size_t node_length(Node *);
 
-Node *node_tail(Node *head) {
+Node *
+node_tail(Node *head) {
 	if (head == NULL)
 		return NULL;
 	// Get the last node in the list.
@@ -27,11 +28,13 @@ Node *node_tail(Node *head) {
 	return current;
 }
 
-Node *node_next(Node *node) {
+Node *
+node_next(Node *node) {
 	return node == NULL ? NULL : node->next;
 }
 
-void node_push(Node **head, void *data) {
+void
+node_push(Node **head, void *data) {
 	Node *new_node = (Node *)malloc(sizeof(Node));
 	if (new_node == NULL)
 		return;
@@ -47,7 +50,8 @@ void node_push(Node **head, void *data) {
 	last->next = new_node;
 }
 
-void node_pop(Node **head) {
+void
+node_pop(Node **head) {
 	// Done if node is empty.
 	if (*head == NULL)
 		return;
@@ -66,7 +70,8 @@ void node_pop(Node **head) {
 	free(*current);
 }
 
-void node_pop_front(Node **head) {
+void
+node_pop_front(Node **head) {
 	// Done if node is empty.
 	if (*head == NULL)
 		return;
@@ -83,7 +88,8 @@ void node_pop_front(Node **head) {
 	return;
 }
 
-bool node_advance(Node **node) {
+bool
+node_advance(Node **node) {
 	if (*node == NULL)
 		return false;
 	*node = (*node)->next;
@@ -92,7 +98,8 @@ bool node_advance(Node **node) {
 	return true;
 }
 
-size_t node_length(Node *head) {
+size_t
+node_length(Node *head) {
 	size_t length = 0;
 	Node *current = head;
 	while (current != NULL) {

@@ -1,17 +1,18 @@
 #include <time.h>
 #include "config.h"
 #include "menu.h"
-#include "ttest.h"
-#include "tresult.h"
+#include "rmenu.h"
+#include "test.h"
+#include "result.h"
 
-TResult *test_result;
+Result *tresult;
 // TODO: resize the window when switching windows.
 size_t current_window = 0;
 bool running = true;
 // Windows.
 Test *test;
 Menu *main_menu;
-Menu *results_menu;
+RMenu *results_menu;
 
 void t_update(Test *);
 void m_update(Menu *);
@@ -31,14 +32,12 @@ main() {
 	init_pair(PAIR_ERROR, COLOR_ERROR, COLOR_BACKGROUND);
 	init_pair(PAIR_ACCENT, COLOR_ACCENT, COLOR_BACKGROUND);
 	wbkgd(stdscr, COLOR_PAIR(PAIR_SUB));
-	test_result = (TResult *)malloc(sizeof(TResult));
-	test_result->wpm = 0;
-	test_result->time_taken = 0;
+	result_init(&tresult, 0, 0);
 	// Create windows.
 	char *menu_options[] = {"Next test", "Repeat test", "Exit", NULL};
-	test_init(&test, time(NULL), test_result);
+	test_init(&test, time(NULL), tresult);
 	menu_init(&main_menu, "Menu", menu_options);
-//	results_menu = menu_result_init("Results", menu_options, test_result);
+	rmenu_init(&results_menu, tresult, "Results", menu_options);
 	// Main loop.
 	while (running) {
 		// Draw.
@@ -60,16 +59,17 @@ main() {
 				break;
 			// Results menu.
 			case 2:
-				menu_draw(results_menu);
-				m_update(results_menu);
+				rmenu_draw(results_menu);
+				m_update(results_menu->menu);
 				break;
 		}
 	}
 	// Cleanup.
 	endwin();
+	result_free(tresult);
 	test_free(test);
 	menu_free(main_menu);
-	menu_free(results_menu);
+	rmenu_free(results_menu);
 	return 0;
 }
 
@@ -96,14 +96,14 @@ m_update(Menu *menu) {
 		// Next test.
 		case 0:
 			test_free(test);
-			test_init(&test, time(NULL), test_result);
+			test_init(&test, time(NULL), tresult);
 			current_window = 0;
 			break;
 		// Repeat test.
 		case 1:
 			const size_t seed = test->seed;
 			test_free(test);
-			test_init(&test, time(NULL), test_result);
+			test_init(&test, time(NULL), tresult);
 			current_window = 0;
 			break;
 		// Exit.

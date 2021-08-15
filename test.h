@@ -6,7 +6,7 @@
 #include "config.h"
 #include "vector2.h"
 #include "tbackend.h"
-#include "tresult.h"
+#include "result.h"
 #include "ttime.h"
 #include "window.h"
 
@@ -17,13 +17,13 @@ typedef struct {
 	bool start_time_set;
 	Window *win;
 	WINDOW *window;
-	TResult *result;
+	Result *result;
 	Node *t_sen;
 	Node *i_sen;
 	Node *mistakes;
 } Test;
 
-void test_init(Test **, time_t, TResult *);
+void test_init(Test **, time_t, Result *);
 void test_free(Test *);
 int test_update(Test *);
 void test_draw(Test *);
@@ -35,7 +35,7 @@ void test_status_chars(Test *);
 float get_wpm(Test *);
 
 void
-test_init(Test **test, time_t seed, TResult *result) {
+test_init(Test **test, time_t seed, Result *result) {
 	*test = (Test *)malloc(sizeof(Test));
 	const Vector2 size = {TWINDOW_WIDTH, TWINDOW_HEIGHT};
 	window_init(&(*test)->win, size.x, size.y);
