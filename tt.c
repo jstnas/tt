@@ -6,8 +6,7 @@
 #include "result.h"
 
 Result *tresult;
-// TODO: resize the window when switching windows.
-size_t current_window = 0;
+unsigned current_window = 0;
 bool running = true;
 // Windows.
 Test *test;
@@ -16,6 +15,7 @@ RMenu *results_menu;
 
 void t_update(Test *);
 void m_update(Menu *);
+void switch_window(unsigned);
 
 int
 main() {
@@ -79,11 +79,11 @@ t_update(Test *test) {
 	switch (result) {
 		// Completed the test.
 		case 0:
-			current_window = 2;
+			switch_window(2);
 			break;
 		// Escape key pressed.
 		case -2:
-			current_window = 1;
+			switch_window(1);
 			break;
 	}
 }
@@ -97,14 +97,14 @@ m_update(Menu *menu) {
 		case 0:
 			test_free(test);
 			test_init(&test, time(NULL), tresult);
-			current_window = 0;
+			switch_window(0);
 			break;
 		// Repeat test.
 		case 1:
 			const size_t seed = test->seed;
 			test_free(test);
 			test_init(&test, time(NULL), tresult);
-			current_window = 0;
+			switch_window(0);
 			break;
 		// Exit.
 		case 2:
@@ -112,7 +112,23 @@ m_update(Menu *menu) {
 			break;
 		// Escape key pressed.
 		case -2:
-			current_window = 0;
+			switch_window(0);
+			break;
+	}
+}
+
+void
+switch_window(unsigned new_win) {
+	current_window = new_win;
+	switch(current_window) {
+		case 0:
+			test->win->resize = true;
+			break;
+		case 1:
+			main_menu->win->resize = true;
+			break;
+		case 2:
+			results_menu->menu->win->resize = true;
 			break;
 	}
 }
