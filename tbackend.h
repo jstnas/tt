@@ -22,7 +22,8 @@ size_t get_word_length(Node *, Node *);
 size_t get_typed_chars(Node *);
 size_t get_offset(const Vector2, Node *, Node *);
 
-bool is_key_allowed(const int key) {
+bool
+is_key_allowed(const int key) {
 	for (size_t k = 0; k < allowed_key_count; k++) {
 		if (key == allowed_keys[k])
 			return true;
@@ -30,7 +31,8 @@ bool is_key_allowed(const int key) {
 	return false;
 }
 
-Node *sentence_init_size(const Vector2 size) {
+Node *
+entence_init_size(const Vector2 size) {
 	Node *sentence = NULL;
 	Vector2 position = {0, 1};
 	while (true) {
@@ -55,7 +57,8 @@ Node *sentence_init_size(const Vector2 size) {
 	return sentence;
 }
 
-Node *sentence_init_words(const size_t word_count) {
+Node *
+entence_init_words(const size_t word_count) {
 	Node *sentence = NULL;
 	for (size_t w = 0; w < word_count; w++) {
 		const size_t word_index = rand() % words_count;
@@ -69,7 +72,8 @@ Node *sentence_init_words(const size_t word_count) {
 }
 
 // TODO: return bool to indicate if a mistake was made.
-bool add_input_key(Node **input_sentence, const int key) {
+bool
+add_input_key(Node **input_sentence, const int key) {
 	char *character = (char *)malloc(sizeof(char));
 	*character = (char)key;
 	// Create new word if sentence is empty.
@@ -86,7 +90,8 @@ bool add_input_key(Node **input_sentence, const int key) {
 }
 
 // TODO: return bool to indicate if a mistake was made.
-bool remove_input_key(Node **input_sentence) {
+bool
+remove_input_key(Node **input_sentence) {
 	// Skip if already empty.
 	if (*input_sentence == NULL)
 		return false;
@@ -101,7 +106,8 @@ bool remove_input_key(Node **input_sentence) {
 	return true;
 }
 
-bool add_input_word(Node **input_sentence) {
+bool
+add_input_word(Node **input_sentence) {
 	// Add a space character if the current sentence is empty.
 	if (*input_sentence == NULL || node_tail(*input_sentence)->data == NULL) {
 		add_input_key(input_sentence, ' ');
@@ -113,13 +119,15 @@ bool add_input_word(Node **input_sentence) {
 	return true;
 }
 
-void add_mistake(Node **mistakes) {
+void
+add_mistake(Node **mistakes) {
 	time_t *mistake = (time_t *)malloc(sizeof(time_t));
 	*mistake = time(NULL);
 	node_push(mistakes, mistake);
 }
 
-size_t get_word_length(Node *t_word, Node *i_word) {
+size_t
+get_word_length(Node *t_word, Node *i_word) {
 	size_t length = 0;
 	if (t_word != NULL)
 		length = node_length((Node *)t_word->data);
@@ -131,7 +139,8 @@ size_t get_word_length(Node *t_word, Node *i_word) {
 	return length;
 }
 
-size_t get_typed_chars(Node *i_sen) {
+size_t
+get_typed_chars(Node *i_sen) {
 	size_t length = 0;
 	while (i_sen != NULL) {
 		length += node_length(i_sen->data);
@@ -141,7 +150,8 @@ size_t get_typed_chars(Node *i_sen) {
 	return length;
 }
 
-size_t get_offset(const Vector2 size, Node *t_word, Node *i_word) {
+size_t
+get_offset(const Vector2 size, Node *t_word, Node *i_word) {
 	size_t offset = 0;
 	// Adds a one line buffer, so you can see the previous line.
 	size_t buffer = 0;
