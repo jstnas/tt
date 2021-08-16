@@ -23,7 +23,8 @@ rmenu_init(RMenu **rmenu, Result *result, char *title, char *options[]) {
 	(*rmenu)->result = result;
 }
 
-void rmenu_draw(RMenu *rmenu) {
+void
+rmenu_draw(RMenu *rmenu) {
 	menu_draw(rmenu->menu);
 	WINDOW *win = rmenu->menu->window;
 	const float wpm = rmenu->result->wpm;

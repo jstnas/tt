@@ -4,14 +4,14 @@
 #include <time.h>
 #include <ncurses.h>
 #include "config.h"
-#include "vector2.h"
+#include "vector.h"
 #include "tbackend.h"
 #include "result.h"
 #include "ttime.h"
 #include "window.h"
 
 typedef struct {
-	Vector2 cursor;
+	Vector cursor;
 	time_t seed;
 	TTime start_time;
 	bool start_time_set;
@@ -37,7 +37,7 @@ float get_wpm(Test *);
 void
 test_init(Test **test, time_t seed, Result *result) {
 	*test = (Test *)malloc(sizeof(Test));
-	const Vector2 size = {TWINDOW_WIDTH, TWINDOW_HEIGHT};
+	const Vector size = {TWINDOW_WIDTH, TWINDOW_HEIGHT};
 	window_init(&(*test)->win, size.x, size.y);
 	(*test)->window = (*test)->win->window;
 	(*test)->seed = seed;
@@ -46,7 +46,7 @@ test_init(Test **test, time_t seed, Result *result) {
 	keypad((*test)->window, TRUE);
 	// Create the target sentence.
 	srand(seed);
-	(*test)->t_sen = sentence_init_words(25);
+	sentence_init_words(&(*test)->t_sen, 25);
 	(*test)->i_sen = NULL;
 }
 
@@ -101,7 +101,7 @@ int test_update(Test *test) {
 void test_draw(Test *test) {
 	window_resize(test->win);
 	wclear(test->window);
-	Vector2 win_size;
+	Vector win_size;
 	getmaxyx(test->window, win_size.y, win_size.x);
 	box(test->window, 0, 0);
 	// Draw the sentence.
@@ -117,8 +117,7 @@ void test_draw(Test *test) {
 		node_advance(&i_word);
 	}
 	// Reset cursor position.
-	test->cursor.x = 0;
-	test->cursor.y = 1;
+	test->cursor = (Vector){0, 1};
 	// Continue until the longer sentence is printed.
 	while (t_word != NULL || i_word != NULL) {
 		Node *t_char = t_word == NULL ? NULL : (Node *)t_word->data;

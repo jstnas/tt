@@ -17,62 +17,6 @@ void t_update(Test *);
 void m_update(Menu *);
 void switch_window(unsigned);
 
-int
-main() {
-	// Init.
-	setenv("ESCDELAY", "0", 0);
-	initscr();
-	start_color();
-	use_default_colors();
-	noecho();
-	raw();
-	cbreak();
-	init_pair(PAIR_SUB, COLOR_SUB, COLOR_BACKGROUND);
-	init_pair(PAIR_TEXT, COLOR_TEXT, COLOR_BACKGROUND);
-	init_pair(PAIR_ERROR, COLOR_ERROR, COLOR_BACKGROUND);
-	init_pair(PAIR_ACCENT, COLOR_ACCENT, COLOR_BACKGROUND);
-	wbkgd(stdscr, COLOR_PAIR(PAIR_SUB));
-	result_init(&tresult, 0, 0);
-	// Create windows.
-	char *menu_options[] = {"Next test", "Repeat test", "Exit", NULL};
-	test_init(&test, time(NULL), tresult);
-	menu_init(&main_menu, "Menu", menu_options);
-	rmenu_init(&results_menu, tresult, "Results", menu_options);
-	// Main loop.
-	while (running) {
-		// Draw.
-		clear();
-		mvprintw(0, 0, "tt");
-		refresh();
-		// Draw and update current window.
-		switch (current_window) {
-			// Test window.
-			case 0:
-				test_draw(test);
-				t_update(test);
-				break;
-			// Main menu.
-			case 1:
-				menu_draw(main_menu);
-				menu_draw_options(main_menu, 1);
-				m_update(main_menu);
-				break;
-			// Results menu.
-			case 2:
-				rmenu_draw(results_menu);
-				m_update(results_menu->menu);
-				break;
-		}
-	}
-	// Cleanup.
-	endwin();
-	result_free(tresult);
-	test_free(test);
-	menu_free(main_menu);
-	rmenu_free(results_menu);
-	return 0;
-}
-
 void
 t_update(Test *test) {
 	const int result = test_update(test);
@@ -131,4 +75,60 @@ switch_window(unsigned new_win) {
 			results_menu->menu->win->resize = true;
 			break;
 	}
+}
+
+int
+main() {
+	// Init.
+	setenv("ESCDELAY", "0", 0);
+	initscr();
+	start_color();
+	use_default_colors();
+	noecho();
+	raw();
+	cbreak();
+	init_pair(PAIR_SUB, COLOR_SUB, COLOR_BACKGROUND);
+	init_pair(PAIR_TEXT, COLOR_TEXT, COLOR_BACKGROUND);
+	init_pair(PAIR_ERROR, COLOR_ERROR, COLOR_BACKGROUND);
+	init_pair(PAIR_ACCENT, COLOR_ACCENT, COLOR_BACKGROUND);
+	wbkgd(stdscr, COLOR_PAIR(PAIR_SUB));
+	result_init(&tresult, 0, 0);
+	// Create windows.
+	char *menu_options[] = {"Next test", "Repeat test", "Exit", NULL};
+	test_init(&test, time(NULL), tresult);
+	menu_init(&main_menu, "Menu", menu_options);
+	rmenu_init(&results_menu, tresult, "Results", menu_options);
+	// Main loop.
+	while (running) {
+		// Draw.
+		clear();
+		mvprintw(0, 0, "tt");
+		refresh();
+		// Draw and update current window.
+		switch (current_window) {
+			// Test window.
+			case 0:
+				test_draw(test);
+				t_update(test);
+				break;
+			// Main menu.
+			case 1:
+				menu_draw(main_menu);
+				menu_draw_options(main_menu, 1);
+				m_update(main_menu);
+				break;
+			// Results menu.
+			case 2:
+				rmenu_draw(results_menu);
+				m_update(results_menu->menu);
+				break;
+		}
+	}
+	// Cleanup.
+	endwin();
+	result_free(tresult);
+	test_free(test);
+	menu_free(main_menu);
+	rmenu_free(results_menu);
+	return 0;
 }

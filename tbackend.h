@@ -5,22 +5,22 @@
 #include <time.h>
 #include "node.h"
 #include "words.h"
-#include "vector2.h"
+#include "vector.h"
 
 static size_t words_count = sizeof(words) / sizeof(*words);
 static char allowed_keys[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 static size_t allowed_key_count = sizeof(allowed_keys) / sizeof(char);
 
 bool is_key_allowed(const int);
-Node *sentence_init_size(const Vector2);
-Node *sentence_init_words(const size_t);
+void sentence_init_size(Node **, const Vector);
+void sentence_init_words(Node **, const size_t);
 bool add_input_key(Node **, const int);
 bool remove_input_key(Node **);
 bool add_input_word(Node **);
 void add_mistake(Node **);
 size_t get_word_length(Node *, Node *);
 size_t get_typed_chars(Node *);
-size_t get_offset(const Vector2, Node *, Node *);
+size_t get_offset(const Vector, Node *, Node *);
 
 bool
 is_key_allowed(const int key) {
@@ -31,10 +31,10 @@ is_key_allowed(const int key) {
 	return false;
 }
 
-Node *
-entence_init_size(const Vector2 size) {
-	Node *sentence = NULL;
-	Vector2 position = {0, 1};
+void
+sentence_init_size(Node **sentence, const Vector size) {
+	*sentence = NULL;
+	Vector position = {0, 1};
 	while (true) {
 		const size_t word_index = rand() % words_count;
 		const size_t word_length = strlen(words[word_index]);
@@ -52,23 +52,21 @@ entence_init_size(const Vector2 size) {
 		Node *new_word = NULL;
 		for (size_t c = 0; c < word_length; c++)
 			node_push(&new_word, &words[word_index][c]);
-		node_push(&sentence, new_word);
+		node_push(sentence, new_word);
 	}
-	return sentence;
 }
 
-Node *
-entence_init_words(const size_t word_count) {
-	Node *sentence = NULL;
+void
+sentence_init_words(Node **sentence, const size_t word_count) {
+	*sentence = NULL;
 	for (size_t w = 0; w < word_count; w++) {
 		const size_t word_index = rand() % words_count;
 		const size_t word_length = strlen(words[word_index]);
 		Node *word = NULL;
 		for (size_t c = 0; c < word_length; c++)
 			node_push(&word, &words[word_index][c]);
-		node_push(&sentence, word);
+		node_push(sentence, word);
 	}
-	return sentence;
 }
 
 // TODO: return bool to indicate if a mistake was made.
@@ -151,7 +149,7 @@ get_typed_chars(Node *i_sen) {
 }
 
 size_t
-get_offset(const Vector2 size, Node *t_word, Node *i_word) {
+get_offset(const Vector size, Node *t_word, Node *i_word) {
 	size_t offset = 0;
 	// Adds a one line buffer, so you can see the previous line.
 	size_t buffer = 0;
