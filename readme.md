@@ -3,11 +3,11 @@ tt - touch typing test for the terminal
 
 [monkeytype](https://monkeytype.com) is bloated
 
-Requirements
+requirements
 ------------
-* C
-* Ncurses
+* c
+* ncurses
 
-Scrot
+scrot
 -----
 ![scrot](scrot.png)
