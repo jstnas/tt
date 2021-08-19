@@ -18,8 +18,8 @@ void
 rmenu_init(RMenu **rmenu, Result *result, char *title, char *options[]) {
 	*rmenu = (RMenu *)malloc(sizeof(RMenu));
 	menu_init(&(*rmenu)->menu, title, options);
-	(*rmenu)->menu->win->width += 3;
-	(*rmenu)->menu->win->height += 2;
+	(*rmenu)->menu->win->width += 4;
+	(*rmenu)->menu->win->height += 3;
 	(*rmenu)->result = result;
 }
 
@@ -27,20 +27,26 @@ void
 rmenu_draw(RMenu *rmenu) {
 	menu_draw(rmenu->menu);
 	WINDOW *win = rmenu->menu->window;
-	const float wpm = rmenu->result->wpm;
-	const float time_taken = rmenu->result->time_taken;
+	const double wpm = rmenu->result->wpm;
+	const double time = rmenu->result->time;
+	const time_t seed = rmenu->result->seed;
 	// Draw wpm.
 	mvwprintw(win, 1, 1, "WPM:");
 	wattron(win, COLOR_PAIR(PAIR_TEXT));
 	wprintw(win, "%3.0f", wpm);
 	wattroff(win, COLOR_PAIR(PAIR_TEXT));
 	// Draw time taken.
-	mvwprintw(win, 2, 1, "Time Taken:");
+	mvwprintw(win, 2, 1, "Time:");
 	wattron(win, COLOR_PAIR(PAIR_TEXT));
-	wprintw(win, "%3.0f", time_taken);
+	wprintw(win, "%3.0f", time);
+	wattroff(win, COLOR_PAIR(PAIR_TEXT));
+	// Draw seed.
+	mvwprintw(win, 3, 1, "Seed:");
+	wattron(win, COLOR_PAIR(PAIR_TEXT));
+	wprintw(win, "%u", seed);
 	wattroff(win, COLOR_PAIR(PAIR_TEXT));
 	// Draw options.
-	menu_draw_options(rmenu->menu, 3);
+	menu_draw_options(rmenu->menu, 4);
 }
 
 void

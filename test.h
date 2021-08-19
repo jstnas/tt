@@ -98,7 +98,7 @@ test_update(Test *test) {
 	// Check if test is complete.
 	if (test_complete_words(test)) {
 		test->result->wpm = get_wpm(test);
-		test->result->time_taken = time_diff(test->start_time);
+		test->result->time = time_diff(test->start_time);
 		// TODO: save results to a file.
 		return 0;
 	}

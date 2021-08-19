@@ -2,7 +2,7 @@
 #define RESULT_H
 
 typedef struct {
-	double wpm, time_taken;
+	double wpm, time;
 	time_t seed;
 } Result;
 
@@ -24,7 +24,7 @@ result_free(Result *result) {
 void
 result_new(Result *result, time_t seed) {
 	result->wpm = 0;
-	result->time_taken = 0;
+	result->time = 0;
 	result->seed = seed;
 }
 
