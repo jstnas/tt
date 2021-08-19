@@ -53,6 +53,8 @@ test_free(Test *test) {
 
 void
 test_reset(Test *test) {
+	// Reset the start time.
+	time_free(test->start_time);
 	test->start_time = NULL;
 	// TODO: free the sentences.
 	// Create the target sentence.
@@ -92,7 +94,7 @@ test_update(Test *test) {
 		add_mistake(&test->mistakes);
 	// Set start time on first keypress.
 	if (set_start_time && test->start_time == NULL)
-		get_time(&test->start_time);
+		time_init(&test->start_time);
 	// Check if test is complete.
 	if (test_complete_words(test)) {
 		test->result->wpm = get_wpm(test);
