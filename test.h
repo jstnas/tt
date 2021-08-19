@@ -12,9 +12,7 @@
 
 typedef struct {
 	Vector cursor;
-	time_t seed;
-	TTime start_time;
-	bool start_time_set;
+	TTime *start_time;
 	Window *win;
 	WINDOW *window;
 	Result *result;
@@ -23,8 +21,9 @@ typedef struct {
 	Node *mistakes;
 } Test;
 
-void test_init(Test **, time_t, Result *);
+void test_init(Test **, Result *);
 void test_free(Test *);
+void test_reset(Test *);
 int test_update(Test *);
 void test_draw(Test *);
 bool test_complete_words(Test *);
@@ -32,30 +31,38 @@ void test_status_wpm(Test *);
 void test_status_time_taken(Test *);
 void test_status_words(Test *);
 void test_status_chars(Test *);
+void test_status_mistakes(Test *);
 float get_wpm(Test *);
 
 void
-test_init(Test **test, time_t seed, Result *result) {
+test_init(Test **test, Result *result) {
 	*test = (Test *)malloc(sizeof(Test));
 	const Vector size = {TWINDOW_WIDTH, TWINDOW_HEIGHT};
 	window_init(&(*test)->win, size.x, size.y);
 	(*test)->window = (*test)->win->window;
-	(*test)->seed = seed;
-	(*test)->start_time_set = false;
 	(*test)->result = result;
 	keypad((*test)->window, TRUE);
-	// Create the target sentence.
-	srand(seed);
-	sentence_init_words(&(*test)->t_sen, 25);
-	(*test)->i_sen = NULL;
+	test_reset(*test);
 }
 
-void test_free(Test *test) {
+void
+test_free(Test *test) {
 	window_free(test->win);
 	free(test);
 }
 
-int test_update(Test *test) {
+void
+test_reset(Test *test) {
+	test->start_time = NULL;
+	// TODO: free the sentences.
+	// Create the target sentence.
+	srand(test->result->seed);
+	sentence_init_words(&test->t_sen, 25);
+	test->i_sen = NULL;
+}
+
+int
+test_update(Test *test) {
 	const int input = wgetch(test->window);
 	bool mistake = false;
 	bool set_start_time = false;
@@ -84,21 +91,20 @@ int test_update(Test *test) {
 	if (mistake)
 		add_mistake(&test->mistakes);
 	// Set start time on first keypress.
-	if (set_start_time && !test->start_time_set) {
+	if (set_start_time && test->start_time == NULL)
 		get_time(&test->start_time);
-		test->start_time_set = true;
-	}
 	// Check if test is complete.
 	if (test_complete_words(test)) {
 		test->result->wpm = get_wpm(test);
-		test->result->time_taken = time_diff(&test->start_time);
+		test->result->time_taken = time_diff(test->start_time);
 		// TODO: save results to a file.
 		return 0;
 	}
 	return -1;
 }
 
-void test_draw(Test *test) {
+void
+test_draw(Test *test) {
 	window_resize(test->win);
 	wclear(test->window);
 	Vector win_size;
@@ -186,10 +192,12 @@ void test_draw(Test *test) {
 	if (win_size.y > 1) {
 		wmove(test->window, 0, 0);
 		wattron(test->window, COLOR_PAIR(PAIR_ACCENT));
-		test_status_words(test);
+/*		test_status_words(test);
 		test_status_wpm(test);
 		test_status_time_taken(test);
-//		test_status_chars(test);
+		test_status_mistakes(test);
+		test_status_chars(test);
+		*/
 		wattroff(test->window, COLOR_PAIR(PAIR_ACCENT));
 	}
 	// Position the cursor.
@@ -199,7 +207,8 @@ void test_draw(Test *test) {
 }
 
 // Complete function for words mode.
-bool test_complete_words(Test *test) {
+bool
+test_complete_words(Test *test) {
 	const size_t i_sen_length = node_length(test->i_sen);
 	const size_t t_sen_length = node_length(test->t_sen);
 	if (i_sen_length > t_sen_length)
@@ -213,38 +222,47 @@ bool test_complete_words(Test *test) {
 	return false;
 }
 
-void test_status_wpm(Test *test) {
+void
+test_status_wpm(Test *test) {
 	float wpm = get_wpm(test);
-	if (!test->start_time_set) {
+	if (test->start_time == NULL)
 		wpm = 0;
-	}
 	// TODO: word count should be the amount of words typed correctly.
 	wprintw(test->window, "%3.0f ", wpm);
 }
 
-void test_status_time_taken(Test *test) {
-	float time_taken = time_diff(&test->start_time);
+void
+test_status_time_taken(Test *test) {
+	float time_taken = time_diff(test->start_time);
 	// Skip if start time hasn't been set.
-	if (!test->start_time_set) {
+	if (test->start_time == NULL)
 		time_taken = 0;
-	}
 	wprintw(test->window, "%3.0f ", time_taken);
 }
 
-void test_status_words(Test *test) {
+void
+test_status_words(Test *test) {
 	const size_t typed_words = node_length(test->i_sen);
 	const size_t total_words = node_length(test->t_sen);
 	wprintw(test->window, "%u/%u ", typed_words > 0 ? typed_words - 1 : 0, total_words);
 }
 
-void test_status_chars(Test *test) {
+void
+test_status_chars(Test *test) {
 	const size_t chars = get_typed_chars(test->i_sen);
-	wprintw(test->window, "%u", chars);
+	wprintw(test->window, "%u ", chars);
 }
 
-float get_wpm(Test *test) {
+void
+test_status_mistakes(Test *test) {
+	const unsigned mistakes = 10;
+	wprintw(test->window, "%u ", mistakes);
+}
+
+float
+get_wpm(Test *test) {
 	const size_t typed_chars = get_typed_chars(test->i_sen);
-	const float time_taken = time_diff(&test->start_time);
+	const float time_taken = time_diff(test->start_time);
 	return typed_chars / 5.0 / (time_taken / 60.0);
 }
 

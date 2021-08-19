@@ -96,11 +96,12 @@ remove_input_key(Node **input_sentence) {
 	// Otherwise remove from the last word.
 	Node *last_word = node_tail(*input_sentence);
 	// Remove the word if it is empty.
-	if (last_word->data == NULL)
+	if (last_word->data == NULL) {
 		node_pop(input_sentence);
+		return false;
+	}
 	// Remove the last character otherwise.
-	else
-		node_pop((Node **)&last_word->data);
+	node_pop((Node **)&last_word->data);
 	return true;
 }
 

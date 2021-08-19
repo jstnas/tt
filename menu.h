@@ -20,7 +20,7 @@ void menu_init(Menu **, char *, char *[]);
 void menu_free(Menu *);
 int menu_update(Menu *);
 void menu_draw(Menu *);
-void menu_draw_options(Menu *, unsigned);
+void menu_draw_options(Menu *, const unsigned);
 
 void
 menu_init(Menu **menu, char *title, char *options[]) {
@@ -103,7 +103,7 @@ menu_draw(Menu *menu) {
 }
 
 void
-menu_draw_options(Menu *menu, unsigned offset) {
+menu_draw_options(Menu *menu, const unsigned offset) {
 	wattron(menu->window, COLOR_PAIR(PAIR_TEXT));
 	for (size_t o = 0; o < menu->option_count; o++) {
 		wmove(menu->window, o + offset, 1);

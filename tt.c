@@ -39,15 +39,15 @@ m_update(Menu *menu) {
 	switch (result) {
 		// Next test.
 		case 0:
-			test_free(test);
-			test_init(&test, time(NULL), tresult);
+			result_new(tresult, time(NULL));
+			test_reset(test);
 			switch_window(0);
 			break;
 		// Repeat test.
 		case 1:
-			const size_t seed = test->seed;
-			test_free(test);
-			test_init(&test, time(NULL), tresult);
+			const size_t seed = tresult->seed;
+			result_new(tresult, seed);
+			test_reset(test);
 			switch_window(0);
 			break;
 		// Exit.
@@ -92,12 +92,12 @@ main() {
 	init_pair(PAIR_ERROR, COLOR_ERROR, COLOR_BACKGROUND);
 	init_pair(PAIR_ACCENT, COLOR_ACCENT, COLOR_BACKGROUND);
 	wbkgd(stdscr, COLOR_PAIR(PAIR_SUB));
-	result_init(&tresult, 0, 0);
+	result_init(&tresult, time(NULL));
 	// Create windows.
 	char *menu_options[] = {"Next test", "Repeat test", "Exit", NULL};
-	test_init(&test, time(NULL), tresult);
 	menu_init(&main_menu, "Menu", menu_options);
 	rmenu_init(&results_menu, tresult, "Results", menu_options);
+	test_init(&test, tresult);
 	// Main loop.
 	while (running) {
 		// Draw.
