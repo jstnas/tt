@@ -14,7 +14,7 @@ int get_time(TTime **time) {
 }
 
 double time_diff(TTime *start) {
-	TTime *now;
+	TTime *now = NULL;
 	get_time(&now);
 	return (now->tv_sec - start->tv_sec) + 1e-9 * (now->tv_nsec - start->tv_nsec);
 }

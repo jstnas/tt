@@ -1,6 +1,6 @@
 TARGET = tt
 CC = cc
-CFLAGS += -lncurses -lm -Wall
+CFLAGS += -lncurses -lm -Wall -g
 INCS = $(wildcard *.h)
 
 $(TARGET): $(TARGET).c $(INCS)

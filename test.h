@@ -192,12 +192,11 @@ test_draw(Test *test) {
 	if (win_size.y > 1) {
 		wmove(test->window, 0, 0);
 		wattron(test->window, COLOR_PAIR(PAIR_ACCENT));
-/*		test_status_words(test);
+		test_status_words(test);
 		test_status_wpm(test);
 		test_status_time_taken(test);
 		test_status_mistakes(test);
 		test_status_chars(test);
-		*/
 		wattroff(test->window, COLOR_PAIR(PAIR_ACCENT));
 	}
 	// Position the cursor.
@@ -233,10 +232,10 @@ test_status_wpm(Test *test) {
 
 void
 test_status_time_taken(Test *test) {
-	float time_taken = time_diff(test->start_time);
+	float time_taken = 0;
 	// Skip if start time hasn't been set.
-	if (test->start_time == NULL)
-		time_taken = 0;
+	if (test->start_time != NULL)
+		time_taken = time_diff(test->start_time);
 	wprintw(test->window, "%3.0f ", time_taken);
 }
 
@@ -262,7 +261,9 @@ test_status_mistakes(Test *test) {
 float
 get_wpm(Test *test) {
 	const size_t typed_chars = get_typed_chars(test->i_sen);
-	const float time_taken = time_diff(test->start_time);
+	float time_taken = 0;
+	if (test->start_time != NULL)
+		time_taken = time_diff(test->start_time);
 	return typed_chars / 5.0 / (time_taken / 60.0);
 }
 
