@@ -5,9 +5,15 @@
 #include "test.h"
 #include "result.h"
 
-Result *tresult;
-unsigned current_window = 0;
+typedef enum {
+	WINDOW_TEST,
+	WINDOW_MENU,
+	WINDOW_RESULT,
+} current_window;
+
+current_window cur_win = WINDOW_TEST;
 bool running = true;
+Result *tresult;
 // Windows.
 Test *test;
 Menu *main_menu;
@@ -63,15 +69,15 @@ m_update(Menu *menu) {
 
 void
 switch_window(unsigned new_win) {
-	current_window = new_win;
-	switch(current_window) {
-		case 0:
+	cur_win = new_win;
+	switch(cur_win) {
+		case WINDOW_TEST:
 			test->win->resize = true;
 			break;
-		case 1:
+		case WINDOW_MENU:
 			main_menu->win->resize = true;
 			break;
-		case 2:
+		case WINDOW_RESULT:
 			results_menu->menu->win->resize = true;
 			break;
 	}
@@ -105,20 +111,17 @@ main() {
 		mvprintw(0, 0, "tt");
 		refresh();
 		// Draw and update current window.
-		switch (current_window) {
-			// Test window.
-			case 0:
+		switch (cur_win) {
+			case WINDOW_TEST:
 				test_draw(test);
 				t_update(test);
 				break;
-			// Main menu.
-			case 1:
+			case WINDOW_MENU:
 				menu_draw(main_menu);
 				menu_draw_options(main_menu, 1);
 				m_update(main_menu);
 				break;
-			// Results menu.
-			case 2:
+			case WINDOW_RESULT:
 				rmenu_draw(results_menu);
 				m_update(results_menu->menu);
 				break;
