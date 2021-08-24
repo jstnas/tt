@@ -226,8 +226,8 @@ test_complete_words(Test *test) {
 void
 test_status_wpm(Test *test) {
 	float wpm = get_wpm(test);
-	if (test->start_time == NULL)
-		wpm = 0;
+	if (wpm > 999)
+		wpm = 999;
 	// TODO: word count should be the amount of words typed correctly.
 	wprintw(test->window, "%3.0f ", wpm);
 }
@@ -263,9 +263,9 @@ test_status_mistakes(Test *test) {
 float
 get_wpm(Test *test) {
 	const size_t typed_chars = get_typed_chars(test->i_sen);
-	float time_taken = 0;
-	if (test->start_time != NULL)
-		time_taken = time_diff(test->start_time);
+	if (test->start_time == NULL)
+		return 0;
+	const float time_taken = time_diff(test->start_time);
 	return typed_chars / 5.0 / (time_taken / 60.0);
 }
 
