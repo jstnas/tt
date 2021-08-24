@@ -7,9 +7,9 @@
 #include "words.h"
 #include "vector.h"
 
-static size_t words_count = sizeof(words) / sizeof(*words);
-static char allowed_keys[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-static size_t allowed_key_count = sizeof(allowed_keys) / sizeof(char);
+static const size_t words_count = sizeof(words) / sizeof(*words);
+static const char allowed_keys[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+static const size_t allowed_key_count = sizeof(allowed_keys) / sizeof(char);
 
 bool is_key_allowed(const int);
 void sentence_init_size(Node **, const Vector);
@@ -157,10 +157,16 @@ get_offset(const Vector size, Node *t_word, Node *i_word) {
 	size_t line_offset = 0;
 	size_t line_length = 0;
 	while (i_word != NULL) {
-		// TODO: figure out how to handle long words.
 		const size_t word_length = get_word_length(t_word, i_word) + 1;
-		// Word is too long.
-		if (line_length + word_length > size.x) {
+		// Word is longer than line.
+		if (word_length > size.x && i_word->next != NULL) {
+			offset += buffer + 1;
+			buffer = line_offset;
+			line_offset = 0;
+			line_length = 0;
+		}
+		// Word too long for line.
+		else if (line_length + word_length > size.x) {
 			offset += buffer;
 			buffer = line_offset;
 			line_offset = 1;
