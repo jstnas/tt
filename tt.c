@@ -45,14 +45,16 @@ m_update(Menu *menu) {
 	switch (result) {
 		// Next test.
 		case 0:
-			result_new(tresult, time(NULL));
+			result_new(tresult, WORDS, 25, time(NULL));
 			test_reset(test);
 			switch_window(0);
 			break;
 		// Repeat test.
 		case 1:
+			const Mode mode = tresult->mode;
+			const unsigned length = tresult->length;
 			const size_t seed = tresult->seed;
-			result_new(tresult, seed);
+			result_new(tresult, mode, length, seed);
 			test_reset(test);
 			switch_window(0);
 			break;
@@ -98,7 +100,7 @@ main() {
 	init_pair(PAIR_ERROR, COLOR_ERROR, COLOR_BACKGROUND);
 	init_pair(PAIR_ACCENT, COLOR_ACCENT, COLOR_BACKGROUND);
 	wbkgd(stdscr, COLOR_PAIR(PAIR_SUB));
-	result_init(&tresult, time(NULL));
+	result_init(&tresult, WORDS, 25, time(NULL));
 	// Create windows.
 	char *menu_options[] = {"Next test", "Repeat test", "Exit", NULL};
 	menu_init(&main_menu, "Menu", menu_options);
