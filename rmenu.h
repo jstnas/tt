@@ -27,12 +27,9 @@ void
 rmenu_draw(RMenu *rmenu) {
 	menu_draw(rmenu->menu);
 	WINDOW *win = rmenu->menu->window;
-	const unsigned length = rmenu->result->length;
-	const double wpm = rmenu->result->wpm;
-	const double time = rmenu->result->time;
-	const time_t seed = rmenu->result->seed;
+	unsigned row = 1;
 	// Draw mode.
-	mvwprintw(win, 1, 1, "Mode:");
+	mvwprintw(win, row++, 1, "Mode:");
 	wattron(win, COLOR_PAIR(PAIR_TEXT));
 	switch (rmenu->result->mode) {
 		case TIME:
@@ -53,27 +50,31 @@ rmenu_draw(RMenu *rmenu) {
 	}
 	wattroff(win, COLOR_PAIR(PAIR_TEXT));
 	// Draw length.
-	mvwprintw(win, 2, 1, "Length:");
+	mvwprintw(win, row++, 1, "Length:");
 	wattron(win, COLOR_PAIR(PAIR_TEXT));
+	const unsigned length = rmenu->result->length;
 	wprintw(win, "%d", length);
 	wattroff(win, COLOR_PAIR(PAIR_TEXT));
 	// Draw wpm.
-	mvwprintw(win, 3, 1, "WPM:");
+	mvwprintw(win, row++, 1, "WPM:");
 	wattron(win, COLOR_PAIR(PAIR_TEXT));
-	wprintw(win, "%3.0f", wpm);
+	const double wpm = rmenu->result->wpm;
+	wprintw(win, "%.0f", wpm);
 	wattroff(win, COLOR_PAIR(PAIR_TEXT));
 	// Draw time taken.
-	mvwprintw(win, 4, 1, "Time:");
+	mvwprintw(win, row++, 1, "Time:");
 	wattron(win, COLOR_PAIR(PAIR_TEXT));
-	wprintw(win, "%3.0f", time);
+	const double time = rmenu->result->time;
+	wprintw(win, "%.0f", time);
 	wattroff(win, COLOR_PAIR(PAIR_TEXT));
 	// Draw seed.
-	mvwprintw(win, 5, 1, "Seed:");
+	mvwprintw(win, row++, 1, "Seed:");
 	wattron(win, COLOR_PAIR(PAIR_TEXT));
+	const time_t seed = rmenu->result->seed;
 	wprintw(win, "%u", seed);
 	wattroff(win, COLOR_PAIR(PAIR_TEXT));
 	// Draw options.
-	menu_draw_options(rmenu->menu, 6);
+	menu_draw_options(rmenu->menu, row++);
 }
 
 void
