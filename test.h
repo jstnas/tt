@@ -59,7 +59,12 @@ test_reset(Test *test) {
 	// TODO: free the sentences.
 	// Create the target sentence.
 	srand(test->result->seed);
-	sentence_init_words(&test->t_sen, 25);
+	// Initialise sentence based on mode.
+	switch (test->result->mode) {
+		case WORDS:
+			sentence_init_words(&test->t_sen, test->result->length);
+			break;
+	}
 	test->i_sen = NULL;
 }
 
@@ -90,13 +95,22 @@ test_update(Test *test) {
 					mistake = true;
 			}
 	}
-	if (mistake)
-		add_mistake(&test->mistakes);
 	// Set start time on first keypress.
 	if (set_start_time && test->start_time == NULL)
 		time_init(&test->start_time);
+	if (mistake)
+		add_mistake(&test->mistakes);
 	// Check if test is complete.
-	if (test_complete_words(test)) {
+	bool completed = false;
+	switch (test->result->mode) {
+		case WORDS:
+		case QUOTE:
+		case CUSTOM:
+			completed = test_complete_words(test);
+			break;
+		case ZEN:
+	}
+	if (completed) {
 		test->result->wpm = get_wpm(test);
 		test->result->time = time_diff(test->start_time);
 		// TODO: save results to a file.

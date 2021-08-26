@@ -42,17 +42,17 @@ t_update(Test *test) {
 void
 m_update(Menu *menu) {
 	const int result = menu_update(menu);
+	const Mode mode = tresult->mode;
+	const unsigned length = tresult->length;
 	switch (result) {
 		// Next test.
 		case 0:
-			result_new(tresult, WORDS, 25, time(NULL));
+			result_new(tresult, mode, length, time(NULL));
 			test_reset(test);
 			switch_window(0);
 			break;
 		// Repeat test.
 		case 1:
-			const Mode mode = tresult->mode;
-			const unsigned length = tresult->length;
 			const size_t seed = tresult->seed;
 			result_new(tresult, mode, length, seed);
 			test_reset(test);
