@@ -100,7 +100,7 @@ main() {
 	init_pair(PAIR_ERROR, COLOR_ERROR, COLOR_BACKGROUND);
 	init_pair(PAIR_ACCENT, COLOR_ACCENT, COLOR_BACKGROUND);
 	wbkgd(stdscr, COLOR_PAIR(PAIR_SUB));
-	result_init(&tresult, WORDS, 25, time(NULL));
+	result_init(&tresult, TIME, 30, time(NULL));
 	// Create windows.
 	char *menu_options[] = {"Next test", "Repeat test", "Exit", NULL};
 	menu_init(&main_menu, "Menu", menu_options);

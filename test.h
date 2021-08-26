@@ -26,9 +26,10 @@ void test_free(Test *);
 void test_reset(Test *);
 int test_update(Test *);
 void test_draw(Test *);
+bool test_complete_time(Test *);
 bool test_complete_words(Test *);
 void test_status_wpm(Test *);
-void test_status_time_taken(Test *);
+void test_status_time(Test *);
 void test_status_words(Test *);
 void test_status_chars(Test *);
 void test_status_mistakes(Test *);
@@ -61,6 +62,9 @@ test_reset(Test *test) {
 	srand(test->result->seed);
 	// Initialise sentence based on mode.
 	switch (test->result->mode) {
+		case TIME:
+			sentence_init_words(&test->t_sen, test->result->length * 3);
+			break;
 		case WORDS:
 			sentence_init_words(&test->t_sen, test->result->length);
 			break;
@@ -103,6 +107,9 @@ test_update(Test *test) {
 	// Check if test is complete.
 	bool completed = false;
 	switch (test->result->mode) {
+		case TIME:
+			completed = test_complete_time(test);
+			break;
 		case WORDS:
 		case QUOTE:
 		case CUSTOM:
@@ -209,16 +216,13 @@ test_draw(Test *test) {
 		wmove(test->window, 0, 0);
 		wattron(test->window, COLOR_PAIR(PAIR_ACCENT));
 		switch (test->result->mode) {
+			case TIME:
+				test_status_time(test);
+				break;
 			case WORDS:
 				test_status_words(test);
 				break;
 		}
-		/*
-		test_status_wpm(test);
-		test_status_time_taken(test);
-		test_status_mistakes(test);
-		test_status_chars(test);
-		*/
 		wattroff(test->window, COLOR_PAIR(PAIR_ACCENT));
 	}
 	// Position the cursor.
@@ -227,17 +231,28 @@ test_draw(Test *test) {
 	curs_set(1);
 }
 
+bool
+test_complete_time(Test *test) {
+	if (test->start_time == NULL)
+		return false;
+	const float time_taken = time_diff(test->start_time);
+	return time_taken > test->result->length;
+}
+
 // Complete function for words mode.
 bool
 test_complete_words(Test *test) {
 	const size_t i_sen_length = node_length(test->i_sen);
 	const size_t t_sen_length = node_length(test->t_sen);
+	// Test is complete if there are more words typed than in the target.
 	if (i_sen_length > t_sen_length)
 		return true;
+	// Test is not complete if there are more words to type.
 	else if (i_sen_length < t_sen_length)
 		return false;
 	const size_t i_word_length = node_length((Node *)node_tail(test->i_sen)->data);
 	const size_t t_word_length = node_length((Node *)node_tail(test->t_sen)->data);
+	// Complete the test once the last word has been typed.
 	if (i_word_length >= t_word_length)
 		return true;
 	return false;
@@ -253,12 +268,12 @@ test_status_wpm(Test *test) {
 }
 
 void
-test_status_time_taken(Test *test) {
-	float time_taken = 0;
+test_status_time(Test *test) {
+	float time_taken = test->result->length;
 	// Skip if start time hasn't been set.
 	if (test->start_time != NULL)
-		time_taken = time_diff(test->start_time);
-	wprintw(test->window, "%3.0f ", time_taken);
+		time_taken -= time_diff(test->start_time);
+	wprintw(test->window, "%.0f ", time_taken);
 }
 
 void
