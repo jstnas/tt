@@ -125,7 +125,7 @@ test_draw(Test *test) {
 	wclear(test->window);
 	Vector win_size;
 	getmaxyx(test->window, win_size.y, win_size.x);
-	box(test->window, 0, 0);
+	//box(test->window, 0, 0);
 	// Draw the sentence.
 	size_t line_length = 0;
 	size_t row = 1;
@@ -208,11 +208,17 @@ test_draw(Test *test) {
 	if (win_size.y > 1) {
 		wmove(test->window, 0, 0);
 		wattron(test->window, COLOR_PAIR(PAIR_ACCENT));
-		test_status_words(test);
+		switch (test->result->mode) {
+			case WORDS:
+				test_status_words(test);
+				break;
+		}
+		/*
 		test_status_wpm(test);
 		test_status_time_taken(test);
 		test_status_mistakes(test);
 		test_status_chars(test);
+		*/
 		wattroff(test->window, COLOR_PAIR(PAIR_ACCENT));
 	}
 	// Position the cursor.
@@ -257,9 +263,11 @@ test_status_time_taken(Test *test) {
 
 void
 test_status_words(Test *test) {
-	const size_t typed_words = node_length(test->i_sen);
+	size_t typed_words = node_length(test->i_sen);
+	if (typed_words > 0)
+		typed_words--;
 	const size_t total_words = node_length(test->t_sen);
-	wprintw(test->window, "%u/%u ", typed_words > 0 ? typed_words - 1 : 0, total_words);
+	wprintw(test->window, "%u/%u ", typed_words, total_words);
 }
 
 void
