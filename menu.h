@@ -99,7 +99,6 @@ menu_draw(Menu *menu) {
 	wattroff(menu->window, COLOR_PAIR(PAIR_ACCENT));
 	// Refresh the screen.
 	wrefresh(menu->window);
-	curs_set(0);
 }
 
 void

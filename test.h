@@ -228,7 +228,6 @@ test_draw(Test *test) {
 	// Position the cursor.
 	wmove(test->window, test->cursor.y, test->cursor.x);
 	wrefresh(test->window);
-	curs_set(1);
 }
 
 bool

@@ -72,9 +72,11 @@ m_update(Menu *menu) {
 void
 switch_window(unsigned new_win) {
 	cur_win = new_win;
+	curs_set(0);
 	switch(cur_win) {
 		case WINDOW_TEST:
 			test->win->resize = true;
+			curs_set(1);
 			break;
 		case WINDOW_MENU:
 			main_menu->win->resize = true;
