@@ -17,7 +17,7 @@
 #define TKEY_DOWN 106
 #define TKEY_SUBMIT 10
 #define TKEY_MENU 27
-#define TKEY_BACK 263
+#define TKEY_BACK 127
 #define TKEY_SPACE 32
 // Window Size.
 #define TWINDOW_WIDTH 80
