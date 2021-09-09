@@ -36,7 +36,7 @@ t_update(Test *test) {
 			break;
 		// Escape key pressed.
 		case -2:
-			switch_window(WINDOW_MODE);
+			switch_window(WINDOW_MENU);
 			break;
 	}
 }
