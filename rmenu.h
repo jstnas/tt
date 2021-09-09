@@ -13,6 +13,7 @@ typedef struct {
 void rmenu_init(RMenu **, Result *, char *, char *[]);
 void rmenu_draw(RMenu *);
 void rmenu_free(RMenu *);
+void rmenu_draw_stat(WINDOW *, unsigned, char *, int);
 
 void
 rmenu_init(RMenu **rmenu, Result *result, char *title, char *options[]) {
@@ -51,29 +52,14 @@ rmenu_draw(RMenu *rmenu) {
 	}
 	wattroff(win, COLOR_PAIR(TEXT));
 	// Draw length.
-	mvwprintw(win, row++, 1, "Length:");
-	wattron(win, COLOR_PAIR(PAIR_TEXT));
-	const unsigned length = rmenu->result->length;
-	wprintw(win, "%d", length);
-	wattroff(win, COLOR_PAIR(PAIR_TEXT));
-	// Draw wpm.
-	mvwprintw(win, row++, 1, "WPM:");
-	wattron(win, COLOR_PAIR(PAIR_TEXT));
-	const double wpm = rmenu->result->wpm;
-	wprintw(win, "%.0f", wpm);
-	wattroff(win, COLOR_PAIR(PAIR_TEXT));
-	// Draw time taken.
-	mvwprintw(win, row++, 1, "Time:");
-	wattron(win, COLOR_PAIR(PAIR_TEXT));
-	const double time = rmenu->result->time;
-	wprintw(win, "%.0f", time);
-	wattroff(win, COLOR_PAIR(PAIR_TEXT));
-	// Draw seed.
-	mvwprintw(win, row++, 1, "Seed:");
-	wattron(win, COLOR_PAIR(PAIR_TEXT));
-	const time_t seed = rmenu->result->seed;
-	wprintw(win, "%u", seed);
-	wattroff(win, COLOR_PAIR(PAIR_TEXT));
+	const int length = (int)rmenu->result->length;
+	const int wpm = (int)rmenu->result->wpm;
+	const int time = (int)rmenu->result->time;
+	const int seed = (int)rmenu->result->seed;
+	rmenu_draw_stat(win, row++, "Length:", length);
+	rmenu_draw_stat(win, row++, "WPM:", wpm);
+	rmenu_draw_stat(win, row++, "Time:", time);
+	rmenu_draw_stat(win, row++, "Seed:", seed);
 	// Draw options.
 	menu_draw_options(rmenu->menu);
 }
@@ -81,6 +67,13 @@ rmenu_draw(RMenu *rmenu) {
 void
 rmenu_free(RMenu *rmenu) {
 	menu_free(rmenu->menu);
+}
+
+void rmenu_draw_stat(WINDOW *win, unsigned row, char *title, int value) {
+	mvwprintw(win, row, 1, title);
+	wattron(win, COLOR_PAIR(TEXT));
+	wprintw(win, "%d", value);
+	wattroff(win, COLOR_PAIR(TEXT));
 }
 
 #endif
