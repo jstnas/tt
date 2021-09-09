@@ -10,7 +10,7 @@
 
 static const size_t words_count = sizeof(words) / sizeof(*words);
 static const size_t quotes_count = sizeof(english_quotes) / sizeof(*english_quotes);
-static const char allowed_keys[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+static const char allowed_keys[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#$%^&*()-_=+`~[{]}\\|;:'\",<.>/?";
 static const size_t allowed_key_count = sizeof(allowed_keys) / sizeof(char);
 
 bool is_key_allowed(const int);
