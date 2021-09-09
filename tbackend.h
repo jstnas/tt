@@ -14,6 +14,7 @@ static const size_t allowed_key_count = sizeof(allowed_keys) / sizeof(char);
 bool is_key_allowed(const int);
 void sentence_init_size(Node **, const Vector);
 void sentence_init_words(Node **, const size_t);
+void sentence_init_string(Node **, const char *);
 bool add_input_key(Node **, const int);
 bool remove_input_key(Node **);
 bool add_input_word(Node **);
@@ -66,6 +67,22 @@ sentence_init_words(Node **sentence, const size_t word_count) {
 		for (size_t c = 0; c < word_length; c++)
 			node_push(&word, &words[word_index][c]);
 		node_push(sentence, word);
+	}
+}
+
+void sentence_init_string(Node **sentence, const char *string) {
+	*sentence = NULL;
+	node_push(sentence, NULL);
+	const size_t string_length = strlen(string);
+	for (size_t c = 0; c < string_length; c++) {
+		switch (string[c]) {
+			case ' ':
+				node_push(sentence, NULL);
+				break;
+			default:
+				Node *last_word = node_tail(*sentence);
+				node_push((Node **)&last_word->data, (void *)&string[c]);
+		}
 	}
 }
 

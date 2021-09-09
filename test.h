@@ -68,6 +68,9 @@ test_reset(Test *test) {
 		case WORDS:
 			sentence_init_words(&test->t_sen, test->result->length);
 			break;
+		case QUOTE:
+			sentence_init_string(&test->t_sen, "Hello World");
+			break;
 	}
 	test->i_sen = NULL;
 }
@@ -220,6 +223,7 @@ test_draw(Test *test) {
 				test_status_time(test);
 				break;
 			case WORDS:
+			case QUOTE:
 				test_status_words(test);
 				break;
 		}
