@@ -20,6 +20,7 @@ rmenu_init(RMenu **rmenu, Result *result, char *title, char *options[]) {
 	menu_init(&(*rmenu)->menu, title, options);
 	(*rmenu)->menu->win->width += 4;
 	(*rmenu)->menu->win->height += 5;
+	(*rmenu)->menu->option_offset += 5;
 	(*rmenu)->result = result;
 }
 
@@ -74,7 +75,7 @@ rmenu_draw(RMenu *rmenu) {
 	wprintw(win, "%u", seed);
 	wattroff(win, COLOR_PAIR(PAIR_TEXT));
 	// Draw options.
-	menu_draw_options(rmenu->menu, row++);
+	menu_draw_options(rmenu->menu);
 }
 
 void

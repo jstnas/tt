@@ -9,6 +9,7 @@
 
 typedef struct {
 	short current_option;
+	short option_offset;
 	size_t option_count;
 	Window *win;
 	WINDOW *window;
@@ -20,12 +21,13 @@ void menu_init(Menu **, char *, char *[]);
 void menu_free(Menu *);
 int menu_update(Menu *);
 void menu_draw(Menu *);
-void menu_draw_options(Menu *, const unsigned);
+void menu_draw_options(Menu *);
 
 void
 menu_init(Menu **menu, char *title, char *options[]) {
 	*menu = (Menu *)malloc(sizeof(Menu));
 	(*menu)->current_option = 0;
+	(*menu)->option_offset = 1;
 	// Work out the size of the window, and the amount of options.
 	// Initialise menu width to the width of the title.
 	unsigned width = strlen(title);
@@ -102,10 +104,10 @@ menu_draw(Menu *menu) {
 }
 
 void
-menu_draw_options(Menu *menu, const unsigned offset) {
+menu_draw_options(Menu *menu) {
 	wattron(menu->window, COLOR_PAIR(PAIR_TEXT));
 	for (size_t o = 0; o < menu->option_count; o++) {
-		wmove(menu->window, o + offset, 1);
+		wmove(menu->window, o + menu->option_offset, 1);
 		if (menu->current_option == o) {
 			wattron(menu->window, A_REVERSE);
 			wprintw(menu->window, menu->options[o]);

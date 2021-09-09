@@ -146,7 +146,7 @@ main() {
 				break;
 			case WINDOW_MENU:
 				menu_draw(main_menu);
-				menu_draw_options(main_menu, 1);
+				menu_draw_options(main_menu);
 				m_update(main_menu);
 				break;
 			case WINDOW_RESULT:
@@ -155,7 +155,7 @@ main() {
 				break;
 			case WINDOW_MODE:
 				menu_draw(mode_menu);
-				menu_draw_options(mode_menu, 1);
+				menu_draw_options(mode_menu);
 				mode_update(mode_menu);
 				break;
 		}
