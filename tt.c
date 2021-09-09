@@ -24,7 +24,7 @@ RMenu *results_menu;
 void t_update(Test *);
 void m_update(Menu *);
 void mode_update(Menu *);
-void switch_window(unsigned);
+void switch_window(current_window);
 
 void
 t_update(Test *test) {
@@ -92,7 +92,7 @@ void mode_update(Menu *menu) {
 }
 
 void
-switch_window(unsigned new_win) {
+switch_window(current_window new_win) {
 	cur_win = new_win;
 	curs_set(0);
 	switch(cur_win) {
