@@ -69,7 +69,7 @@ test_reset(Test *test) {
 			sentence_init_words(&test->t_sen, test->result->length);
 			break;
 		case QUOTE:
-			sentence_init_string(&test->t_sen, "Hello World");
+			sentence_init_quote(&test->t_sen);
 			break;
 	}
 	test->i_sen = NULL;

@@ -6,15 +6,17 @@
 #include "node.h"
 #include "words.h"
 #include "vector.h"
+#include "quotes/english.h"
 
 static const size_t words_count = sizeof(words) / sizeof(*words);
+static const size_t quotes_count = sizeof(english_quotes) / sizeof(*english_quotes);
 static const char allowed_keys[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 static const size_t allowed_key_count = sizeof(allowed_keys) / sizeof(char);
 
 bool is_key_allowed(const int);
 void sentence_init_size(Node **, const Vector);
 void sentence_init_words(Node **, const size_t);
-void sentence_init_string(Node **, const char *);
+void sentence_init_quote(Node **);
 bool add_input_key(Node **, const int);
 bool remove_input_key(Node **);
 bool add_input_word(Node **);
@@ -70,18 +72,23 @@ sentence_init_words(Node **sentence, const size_t word_count) {
 	}
 }
 
-void sentence_init_string(Node **sentence, const char *string) {
+void sentence_init_quote(Node **sentence) {
+	// Pick a random quote.
+	const Quote *quote = &english_quotes[rand() % quotes_count];
+	// Initialise the sentence and add an empty word.
 	*sentence = NULL;
 	node_push(sentence, NULL);
-	const size_t string_length = strlen(string);
-	for (size_t c = 0; c < string_length; c++) {
-		switch (string[c]) {
+	// Go through the quote.
+	const char *text = quote->text;
+	const size_t quote_length = strlen(text);
+	for (size_t c = 0; c < quote_length; c++) {
+		switch (text[c]) {
 			case ' ':
 				node_push(sentence, NULL);
 				break;
 			default:
 				Node *last_word = node_tail(*sentence);
-				node_push((Node **)&last_word->data, (void *)&string[c]);
+				node_push((Node **)&last_word->data, (void *)&text[c]);
 		}
 	}
 }
