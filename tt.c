@@ -106,6 +106,9 @@ switch_window(current_window new_win) {
 		case WINDOW_RESULT:
 			results_menu->menu->win->resize = true;
 			break;
+		case WINDOW_MODE:
+			mode_menu->win->resize = true;
+			break;
 	}
 }
 
