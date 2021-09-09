@@ -96,16 +96,16 @@ menu_draw(Menu *menu) {
 	// Draw a box around the menu.
 	box(menu->window, 0, 0);
 	// Draw the title.
-	wattron(menu->window, COLOR_PAIR(PAIR_ACCENT));
+	wattron(menu->window, COLOR_PAIR(ACCENT));
 	mvwprintw(menu->window, 0, 1, menu->title);
-	wattroff(menu->window, COLOR_PAIR(PAIR_ACCENT));
+	wattroff(menu->window, COLOR_PAIR(ACCENT));
 	// Refresh the screen.
 	wrefresh(menu->window);
 }
 
 void
 menu_draw_options(Menu *menu) {
-	wattron(menu->window, COLOR_PAIR(PAIR_TEXT));
+	wattron(menu->window, COLOR_PAIR(TEXT));
 	for (size_t o = 0; o < menu->option_count; o++) {
 		wmove(menu->window, o + menu->option_offset, 1);
 		if (menu->current_option == o) {
@@ -116,7 +116,7 @@ menu_draw_options(Menu *menu) {
 		else
 			wprintw(menu->window, menu->options[o]);
 	}
-	wattroff(menu->window, COLOR_PAIR(PAIR_TEXT));
+	wattroff(menu->window, COLOR_PAIR(TEXT));
 }
 
 #endif

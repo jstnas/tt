@@ -31,7 +31,7 @@ rmenu_draw(RMenu *rmenu) {
 	unsigned row = 1;
 	// Draw mode.
 	mvwprintw(win, row++, 1, "Mode:");
-	wattron(win, COLOR_PAIR(PAIR_TEXT));
+	wattron(win, COLOR_PAIR(TEXT));
 	switch (rmenu->result->mode) {
 		case TIME:
 			wprintw(win, "Time");
@@ -49,7 +49,7 @@ rmenu_draw(RMenu *rmenu) {
 			wprintw(win, "Custom");
 			break;
 	}
-	wattroff(win, COLOR_PAIR(PAIR_TEXT));
+	wattroff(win, COLOR_PAIR(TEXT));
 	// Draw length.
 	mvwprintw(win, row++, 1, "Length:");
 	wattron(win, COLOR_PAIR(PAIR_TEXT));

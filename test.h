@@ -160,16 +160,16 @@ test_draw(Test *test) {
 			const char character = t_char == NULL ? *(char *)i_char->data :
 				*(char *)t_char->data;
 			// Choose the color pair.
-			short pair = PAIR_ERROR;
+			Pair pair = ERROR;
 			// Normal if haven't reached this point.
 			if (i_char == NULL && i_word != NULL && i_word->next == NULL)
-				pair = PAIR_SUB;
+				pair = SUB;
 			else if (i_word == NULL)
-				pair = PAIR_SUB;
+				pair = SUB;
 			// Correct if characters match.
 			else if (t_char != NULL && i_char != NULL &&
 					*(char *)t_char->data == *(char *)i_char->data) {
-				pair = PAIR_TEXT;
+				pair = TEXT;
 				getyx(test->window, test->cursor.y, test->cursor.x);
 				test->cursor.x++;
 			}
@@ -217,7 +217,7 @@ test_draw(Test *test) {
 	// Draw the stats.
 	if (win_size.y > 1) {
 		wmove(test->window, 0, 0);
-		wattron(test->window, COLOR_PAIR(PAIR_ACCENT));
+		wattron(test->window, COLOR_PAIR(ACCENT));
 		switch (test->result->mode) {
 			case TIME:
 				test_status_time(test);
@@ -227,7 +227,7 @@ test_draw(Test *test) {
 				test_status_words(test);
 				break;
 		}
-		wattroff(test->window, COLOR_PAIR(PAIR_ACCENT));
+		wattroff(test->window, COLOR_PAIR(ACCENT));
 	}
 	// Position the cursor.
 	wmove(test->window, test->cursor.y, test->cursor.x);

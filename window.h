@@ -2,6 +2,7 @@
 #define WINDOW_H
 
 #include <ncurses.h>
+#include "pairs.h"
 
 typedef struct {
 	WINDOW *window;
@@ -27,7 +28,7 @@ window_init(Window **win, unsigned width, unsigned height) {
 	*win = (Window *)malloc(sizeof(Window));
 	// Create and setup the window.
 	(*win)->window = newwin(0, 0, 0, 0);
-	wbkgd((*win)->window, COLOR_PAIR(PAIR_SUB));
+	wbkgd((*win)->window, COLOR_PAIR(SUB));
 	// Assign the rest.
 	(*win)->width = width;
 	(*win)->height = height;

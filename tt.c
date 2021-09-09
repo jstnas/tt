@@ -4,6 +4,7 @@
 #include "rmenu.h"
 #include "test.h"
 #include "result.h"
+#include "pairs.h"
 
 typedef enum {
 	WINDOW_TEST,
@@ -122,11 +123,8 @@ main() {
 	noecho();
 	raw();
 	cbreak();
-	init_pair(PAIR_SUB, COLOR_SUB, COLOR_BACKGROUND);
-	init_pair(PAIR_TEXT, COLOR_TEXT, COLOR_BACKGROUND);
-	init_pair(PAIR_ERROR, COLOR_ERROR, COLOR_BACKGROUND);
-	init_pair(PAIR_ACCENT, COLOR_ACCENT, COLOR_BACKGROUND);
-	wbkgd(stdscr, COLOR_PAIR(PAIR_SUB));
+	init_pairs();
+	wbkgd(stdscr, COLOR_PAIR(SUB));
 	result_init(&tresult, QUOTE, 30, time(NULL));
 	// Create windows.
 	char *menu_options[] = {"Next test", "Repeat test", "Mode", "Exit", NULL};
