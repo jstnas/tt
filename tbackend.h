@@ -4,8 +4,8 @@
 #include <string.h>
 #include <time.h>
 #include "node.h"
-#include "words.h"
 #include "vector.h"
+#include "words/english.h"
 #include "quotes/english.h"
 
 static const size_t words_count = sizeof(words) / sizeof(*words);

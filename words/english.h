@@ -1,5 +1,5 @@
-#ifndef WORDS_H
-#define WORDS_H
+#ifndef WORDS_ENGLISH_H
+#define WORDS_ENGLISH_H
 
 static char *words[] = {
 	"the",
