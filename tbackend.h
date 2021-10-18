@@ -18,8 +18,8 @@ void sentence_init_size(Node **, const Vector);
 void sentence_init_words(Node **, const size_t);
 void sentence_init_quote(Node **);
 bool add_input_key(Node **, const int);
-bool remove_input_key(Node **);
-bool add_input_word(Node **);
+void remove_input_key(Node **);
+void add_input_word(Node **);
 void add_mistake(Node **);
 size_t get_word_length(Node *, Node *);
 size_t get_typed_chars(Node *);
@@ -112,34 +112,32 @@ add_input_key(Node **input_sentence, const int key) {
 }
 
 // TODO: return bool to indicate if a mistake was made.
-bool
+void
 remove_input_key(Node **input_sentence) {
 	// Skip if already empty.
 	if (*input_sentence == NULL)
-		return false;
+		return;
 	// Otherwise remove from the last word.
 	Node *last_word = node_tail(*input_sentence);
 	// Remove the word if it is empty.
 	if (last_word->data == NULL) {
 		node_pop(input_sentence);
-		return false;
+		return;
 	}
 	// Remove the last character otherwise.
 	node_pop((Node **)&last_word->data);
-	return true;
 }
 
-bool
+void
 add_input_word(Node **input_sentence) {
 	// Add a space character if the current sentence is empty.
 	if (*input_sentence == NULL || node_tail(*input_sentence)->data == NULL) {
 		add_input_key(input_sentence, ' ');
-		return false;
+		return;
 	}
 	// Add a new word.
 	// TODO: Check if space was the correct key.
 	node_push(input_sentence, NULL);
-	return true;
 }
 
 void

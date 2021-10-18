@@ -87,19 +87,16 @@ test_update(Test *test) {
 		case TKEY_MENU:
 			return -2;
 		case TKEY_BACK:
-			if (!remove_input_key(&test->i_sen))
-				mistake = true;
+			remove_input_key(&test->i_sen);
 			break;
 		case TKEY_SPACE:
 			set_start_time = true;
-			if (!add_input_word(&test->i_sen))
-				mistake = true;
+			add_input_word(&test->i_sen);
 			break;
 		default:
 			if (is_key_allowed(input)) {
 				set_start_time = true;
-				if (!add_input_key(&test->i_sen, input))
-					mistake = true;
+				mistake = add_input_key(&test->i_sen, input);
 			}
 	}
 	// Set start time on first keypress.
